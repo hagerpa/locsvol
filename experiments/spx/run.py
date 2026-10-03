@@ -1,6 +1,6 @@
 """The study of Section 3 of the paper for one date pair and backbone.
 
-    python experiments/spx/run.py --pair fomc --backbone bergomi --output <folder> [--paper]
+    python experiments/spx/run.py --pair fomc --backbone bergomi --output <folder>
 
 1. The quotes of the earlier day, their target and the fit of the backbone (Section 3.2).
 2. The quotes of the event day and their target: SSVI, refined SVI, Dupire (Section 3.1).
@@ -9,8 +9,8 @@
 4. Twelve fixed-point iterations for each basis (Algorithm 2.1).
 5. The particle method of Guyon and Henry-Labordere on the same paths.
 6. Four correction steps after 0, 3, 5 and 8 iterations for each basis.
-7. Prices of all models on 20 sets of 65,536 Sobol paths and, with --paper, of the models of the
-   paper's tables and figures on 320 sets of 65,536 independent paths (Section 3.4).
+7. Prices of all models on 20 sets of 65,536 Sobol paths, and of the models of the paper's tables
+   and figures on 320 sets of 65,536 independent paths (Section 3.4).
 
 Every step keeps its result in the output folder and reuses it when the script runs again.
 results.py turns the prices into the results of results/<pair>/<backbone>/.
@@ -291,7 +291,7 @@ def price(folder, models, model, times, comparison, stream, replications, paths,
     return {name: jnp.stack([p[name] for p in prices]) for name in models}
 
 
-def run(pair, backbone, data, output, paper):
+def run(pair, backbone, data, output):
     """Steps 1 to 7 for one date pair and backbone."""
     output.mkdir(parents=True, exist_ok=True)
     streams = s.streams(pair.label, pair.event_day.isoformat(), backbone)
@@ -317,18 +317,17 @@ def run(pair, backbone, data, output, paper):
         s.EVALUATION_PATHS,
         independent=False,
     )
-    if paper:
-        price(
-            output / "paper-evaluation",
-            paper_models(models),
-            model,
-            times,
-            comparison,
-            streams["paper"],
-            s.PAPER_REPLICATIONS,
-            s.PAPER_PATHS,
-            independent=True,
-        )
+    price(
+        output / "paper-evaluation",
+        paper_models(models),
+        model,
+        times,
+        comparison,
+        streams["paper"],
+        s.PAPER_REPLICATIONS,
+        s.PAPER_PATHS,
+        independent=True,
+    )
 
 
 def main():
@@ -339,11 +338,8 @@ def main():
     parser.add_argument("--backbone", required=True, choices=("bergomi", "heston"))
     parser.add_argument("--data", type=Path, default=Path("data/wrds"))
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--paper", action="store_true", help="also the paper's evaluation")
     arguments = parser.parse_args()
-    run(
-        PAIRS[arguments.pair], arguments.backbone, arguments.data, arguments.output, arguments.paper
-    )
+    run(PAIRS[arguments.pair], arguments.backbone, arguments.data, arguments.output)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
-"""The results of a run: results/<pair>/<backbone>/ and, for the paper's run, the paper's tables.
+"""The results of a run: results/<pair>/<backbone>/.
 
-    python experiments/spx/results.py --pair fomc --backbone bergomi --output <folder> [--paper]
+    python experiments/spx/results.py --pair fomc --backbone bergomi --output <folder>
 
 summary.json holds, for every model, the RMSE against the target per region, the bid-ask losses
 and the shares of liquid quotes inside their intervals, with standard errors, from the 20 sets of
 Sobol paths; parameters.json the fitted backbone, the target, the coordinates and the coefficients
-of every parametrized leverage factor; smiles.png, convergence.png and spreads.png the figures.
-With --paper, paper/ holds the paper's tables (tables.md, tables.json) and figures (PDF) from the
-320 sets of independent paths. results/README.md is rebuilt from every published run.
+of every parametrized leverage factor. paper/ holds the paper's tables (tables.md, tables.json) and
+figures (PDF and PNG) from the 320 sets of independent paths, and README.md the report of the run
+with the figures of figures/ (report.py). results/README.md is rebuilt from every published run.
 """
 
 import argparse
@@ -25,6 +25,7 @@ import settings as s
 from date_pairs import PAIRS
 from evaluation import Comparison, jackknife
 from figures import draw
+from report import draw_report_figures, write_report
 from run import calibrate, corrected, day_quotes, paper_models, time_grid
 
 import locsvol as lsv
@@ -367,9 +368,10 @@ def overview(summaries):
             return f"{cell(row['liquid_quotes_percent']['inside'], digits=0)}%"
 
         pair = record["date_pair"]
+        folder = f"{pair['label']}/{record['backbone']}"
         lines.append(
-            f"| `{pair['label']}` ({pair['earlier_day']} → {pair['event_day']}) "
-            f"| {record['backbone'].capitalize()} | {rmse(fixed)} | {rmse(particle)} "
+            f"| [`{pair['label']}`]({folder}) ({pair['earlier_day']} → {pair['event_day']}) "
+            f"| [{record['backbone'].capitalize()}]({folder}) | {rmse(fixed)} | {rmse(particle)} "
             f"| {inside(rows[last])} | {inside(particle)} |"
         )
     return lines
@@ -397,6 +399,13 @@ def readme(summaries):
         "",
         "## Files",
         "",
+        "Each folder opens with its report, `README.md`: the paper's tables and figures for that "
+        "date pair and backbone, every model's errors and bid-ask losses, the fixed-point "
+        "iteration iterate by iterate, every correction chain, and the smiles and prices at every "
+        "expiry. Besides it:",
+        "",
+        "- `paper/`: the paper's tables (`tables.md`, `tables.json`) and figures (PDF and PNG), "
+        f"from {s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths.",
         "- `summary.json`: for every model (the starting point L0, the fixed-point iterates after "
         "3, 5, 8 and 12 iterations of both bases, every correction step and the particle method) "
         "the RMSE per region and the bid-ask loss over all and over the liquid quotes, each with "
@@ -405,10 +414,7 @@ def readme(summaries):
         "- `parameters.json`: the fitted backbone, the SSVI and refined SVI target, the "
         "coordinates and the coefficients of every parametrized leverage factor, with the code "
         "commit and the SHA-256 of both data files.",
-        "- `smiles.png`, `convergence.png`, `spreads.png`: the figures of the run, drawn as in the "
-        "paper.",
-        "- `fomc/bergomi/paper/`: the paper's tables and figures, from 320 sets of 65,536 "
-        "independent paths.",
+        "- `figures/`: the figures of the report.",
         "",
         "The quotes are OptionMetrics data from Wharton Research Data Services (WRDS) and are not "
         "part of the repository; see `../README.md` for obtaining them and running the study.",
@@ -420,7 +426,7 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
 
 
-def publish(pair, backbone, data, output, paper):
+def publish(pair, backbone, data, output):
     """Write the results of one finished run."""
     streams = s.streams(pair.label, pair.event_day.isoformat(), backbone)
     quotes = day_quotes(data, pair.event_day, pair.event_sha256)
@@ -439,25 +445,38 @@ def publish(pair, backbone, data, output, paper):
     write_json(folder / "parameters.json", parameters(pair, model, target, coordinates, models))
     estimates = {name: (statistics[name][0], statistics[name][1]) for name in names}
     pooled_by_name = {name: pooled[i] for i, name in enumerate(names)}
-    draw(folder, comparison, pooled_by_name, estimates, increments(output), ("png",), 300)
-    if paper:
-        chosen = paper_models(models)
-        paper_prices = evaluation_prices(output / "paper-evaluation", chosen, s.PAPER_REPLICATIONS)
-        tables = paper_tables(comparison, paper_prices, target_row)
-        (folder / "paper").mkdir(exist_ok=True)
-        write_json(folder / "paper" / "tables.json", tables)
-        (folder / "paper" / "tables.md").write_text(tables_markdown(tables))
-        paper_pooled = {name: jnp.mean(p, axis=0) for name, p in paper_prices.items()}
+    draw_report_figures(
+        folder / "figures", comparison, pooled_by_name, statistics, increments(output)
+    )
+    chosen = paper_models(models)
+    paper_prices = evaluation_prices(output / "paper-evaluation", chosen, s.PAPER_REPLICATIONS)
+    tables = paper_tables(comparison, paper_prices, target_row)
+    (folder / "paper").mkdir(exist_ok=True)
+    write_json(folder / "paper" / "tables.json", tables)
+    (folder / "paper" / "tables.md").write_text(tables_markdown(tables))
+    paper_pooled = {name: jnp.mean(p, axis=0) for name, p in paper_prices.items()}
+    for formats, dpi in ((("pdf",), "figure"), (("png",), 200)):
         draw(
             folder / "paper",
             comparison,
             paper_pooled,
             estimates,
             increments(output),
-            ("pdf",),
-            "figure",
+            formats,
+            dpi,
             ("smiles", "convergence"),
         )
+    write_report(
+        folder,
+        pair,
+        backbone,
+        model,
+        comparison,
+        prices,
+        statistics,
+        target_row,
+        tables_markdown(tables),
+    )
     summaries = [json.loads(path.read_text()) for path in sorted(RESULTS.glob("*/*/summary.json"))]
     (RESULTS / "README.md").write_text(readme(summaries))
 
@@ -470,11 +489,8 @@ def main():
     parser.add_argument("--backbone", required=True, choices=("bergomi", "heston"))
     parser.add_argument("--data", type=Path, default=Path("data/wrds"))
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--paper", action="store_true", help="also the paper's tables and figures")
     arguments = parser.parse_args()
-    publish(
-        PAIRS[arguments.pair], arguments.backbone, arguments.data, arguments.output, arguments.paper
-    )
+    publish(PAIRS[arguments.pair], arguments.backbone, arguments.data, arguments.output)
 
 
 if __name__ == "__main__":

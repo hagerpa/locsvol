@@ -105,7 +105,10 @@ jackknife over the sets of paths.
 ```sh
 python experiments/spx/pull_data.py --username <wrds user>          # once, needs WRDS access
 python experiments/spx/run.py --pair fomc --backbone bergomi --output <folder>
+python experiments/spx/results.py --pair fomc --backbone bergomi --output <folder>
 ```
 
 `run.py` keeps the results of its expensive steps in the output folder and reuses them when it is
-run again. It writes the summary, parameters and figures of the run to `results/<pair>/<backbone>/`.
+run again. `results.py` writes the results of the run to `results/<pair>/<backbone>/`: the report
+`README.md` with the paper's tables and figures for that pair and backbone and every other model
+of the run, `summary.json`, `parameters.json`, and the figures (`report.py`).
