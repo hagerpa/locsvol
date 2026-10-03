@@ -93,8 +93,17 @@ def table_times(
 
 def tabulate(function, chart, times, state_limit=0.995, state_count=801):
     """The table of a positive function at the times and at state_count equally spaced nodes of
-    the state coordinate in [-state_limit, state_limit]."""
+    the state coordinate in [-state_limit, state_limit]. Where the function has no positive
+    finite value, a node takes the value of its nearest neighbour toward the money (u = 0) in the
+    same row, so that the table is constant beyond the last valid node."""
     nodes = jnp.linspace(-state_limit, state_limit, state_count)
     grid = jnp.broadcast_to(times[:, None], (times.size, nodes.size))
     x = chart.log_moneyness(grid, jnp.broadcast_to(nodes[None, :], grid.shape))
-    return Table(times, nodes, function(grid, x), chart)
+    values = np.array(function(grid, x))
+    centre = int(np.argmin(np.abs(np.asarray(nodes))))
+    for columns in (range(centre + 1, state_count), range(centre - 1, -1, -1)):
+        for j in columns:
+            inner = j - 1 if j > centre else j + 1
+            invalid = ~(np.isfinite(values[:, j]) & (values[:, j] > 0))
+            values[invalid, j] = values[invalid, inner]
+    return Table(times, nodes, jnp.asarray(values), chart)

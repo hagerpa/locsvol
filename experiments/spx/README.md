@@ -68,7 +68,7 @@ local volatility follows by the Dupire formula.
 
 | | |
 |---|---|
-| Base L0 | Dupire local volatility capped at 5, read 0.1 inside the domain of the target, tabulated at 801 equally spaced values of the state coordinate |
+| Base L0 | Dupire local volatility capped at 5, read 0.1 inside the domain of the target, tabulated at 801 equally spaced values of the state coordinate; where the Dupire formula has no value, far beyond the quotes, a node takes the value of its neighbour toward the money; the target sigma_Dup is tabulated in the same way |
 | Coordinates | state u = (2/pi) arctan(x / s(t)) with s(t) = theta(max(t, 0.001))^gamma / eta from the SSVI fit; time: s(t) mapped onto [-1, 1] over [0, 1.1] and held below the first grid node; u clipped to the running maximum of the 99.9% quantile of abs(u) under L0, capped at 9.2 ATM standard deviations |
 | Basis | Chebyshev tensor products of degrees (10, 12), 143 coefficients, and (6, 8), 63 coefficients |
 | Regression | Gamma regression with log link, ridge 2.5 * 10^-7 on the coefficients alpha = 2 zeta; every fourth time node of every path, phases by the van der Corput sequence; trapezoidal weights in time |

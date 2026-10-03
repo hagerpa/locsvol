@@ -53,6 +53,24 @@ def test_table_interpolates_linearly_and_caps():
     np.testing.assert_allclose(capped(jnp.asarray(0.5), x), expected)
 
 
+def test_table_takes_the_value_toward_the_money_where_the_function_has_none():
+    c = chart()
+
+    def gapped(t, x):
+        value = 0.2 + 0.1 * t + 0.05 * c(t, x)[..., 1]
+        return jnp.where(x > 0.3, jnp.nan, jnp.where(x < -0.4, -1.0, value))
+
+    times = jnp.asarray([0.0, 0.5, 1.0])
+    table = tabulate(gapped, c, times)
+    values = np.asarray(table.values)
+    x = np.asarray(c.log_moneyness(times[:, None], table.nodes[None, :]))
+    assert np.all(np.isfinite(values)) and np.all(values > 0)
+    for row in range(times.size):
+        inside = np.flatnonzero((x[row] >= -0.4) & (x[row] <= 0.3))
+        np.testing.assert_array_equal(values[row, x[row] > 0.3], values[row, inside[-1]])
+        np.testing.assert_array_equal(values[row, x[row] < -0.4], values[row, inside[0]])
+
+
 def test_parametrized_leverage_at_one_time_equals_the_vector_evaluation():
     c = chart()
     basis = ChebyshevTensor((2, 3))
