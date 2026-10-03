@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "locsvol"
+version = "1.0.0"
+description = "Calibration of local stochastic volatility models by fixed-point iteration"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Christian Bayer" },
+    { name = "Denis Belomestny" },
+    { name = "Paul P. Hager" },
+    { name = "John Schoenmakers" },
+]
+dependencies = [
+    "jax==0.11.1",
+    "jaxlib==0.11.1",
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+]
+
+[project.optional-dependencies]
+heston = [
+    "roughprix @ git+https://github.com/hagerpa/roughprix.git@320dfd9792f8f2b32a1e85ef66309440e37a7f35",
+]
+study = [
+    "matplotlib==3.10.8",
+    "wrds==3.5.0",
+    "roughprix @ git+https://github.com/hagerpa/roughprix.git@320dfd9792f8f2b32a1e85ef66309440e37a7f35",
+]
+dev = ["pytest==9.1.1", "ruff==0.15.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
