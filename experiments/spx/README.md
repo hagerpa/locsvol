@@ -60,7 +60,7 @@ local volatility follows by the Dupire formula.
 | | |
 |---|---|
 | Time grid | t_k = (90/365)(k/800)^2 up to 90 days, then steps of 1.1/440 up to 1.1 years, with the quoted maturities inserted (1,159 nodes on 18 Dec 2024) |
-| Calibration paths | 32,768 antithetic paths from scrambled Sobol points with a Brownian bridge |
+| Calibration paths | 16,384 antithetic paths from scrambled Sobol points with a Brownian bridge, for the fixed-point iteration and the particle method; four further sets of 16,384 each for the Bergomi fit and for the correction steps |
 | Evaluation | 20 independently scrambled sets of 65,536 such paths for every model |
 | Evaluation in the paper's tables | 320 sets of 65,536 independent pseudo-random paths |
 
@@ -69,7 +69,7 @@ local volatility follows by the Dupire formula.
 | | |
 |---|---|
 | Base L0 | Dupire local volatility capped at 5, read 0.1 inside the domain of the target, tabulated at 801 equally spaced values of the state coordinate; where the Dupire formula has no value, far beyond the quotes, a node takes the value of its neighbour toward the money; the target sigma_Dup is tabulated in the same way |
-| Coordinates | state u = (2/pi) arctan(x / s(t)) with s(t) = theta(max(t, 0.001))^gamma / eta from the SSVI fit; time: s(t) mapped onto [-1, 1] over [0, 1.1] and held below the first grid node; u clipped to the running maximum of the 99.9% quantile of abs(u) under L0, capped at 9.2 ATM standard deviations |
+| Coordinates | state u = (2/pi) arctan(x / s(t)) with s(t) = theta(max(t, 0.001))^gamma / eta from the SSVI fit; time: s(t) mapped onto [-1, 1] over [0, 1.1] and held below the first grid node; u clipped to [u(t, x_eps(t)), u(t, x_{1-eps}(t))] and mapped affinely onto [-1, 1], where x_eps(t) is the quantile of X_t at probability eps under the law implied by the SSVI fit, eps = kappa / N with N = 16,384 training paths and kappa = 3.2768, so eps = 2 * 10^-4 and about three paths lie beyond each edge at each time; the quantiles are tabulated at the times of the table of L0 and interpolated linearly in t; beyond the edges the leverage factor is constant in x |
 | Basis | Chebyshev tensor products of degrees (10, 12), 143 coefficients, and (6, 8), 63 coefficients |
 | Regression | Gamma regression with log link, ridge 2.5 * 10^-7 on the coefficients alpha = 2 zeta; every fourth time node of every path, phases by the van der Corput sequence; trapezoidal weights in time |
 | Iterations | 12 on the same paths; models after 3, 5, 8 and 12 iterations are evaluated |
@@ -79,7 +79,7 @@ local volatility follows by the Dupire formula.
 As published by Guyon and Henry-Labordere: quartic kernel, bandwidth
 1.5 sigma_VS(t) sqrt(max(t, 1/4)) N^(-1/5), max(ceil(30 sqrt(t)), 15) nodes between the digital
 quantiles of the target at 0.001 and 0.999, not-a-knot cubic spline with flat tails; on the same
-32,768 paths.
+16,384 paths.
 
 ## Correction against the quotes (Section 3.3)
 
@@ -88,7 +88,7 @@ distance of the model prices to the bid-ask intervals; for a quote that is not l
 is widened to contain its price at the start. Each step is restricted to a trust region of radius
 0.005, 0.01, 0.01, 0.01 in the root mean square change of log L along the paths, 0.03 in total,
 with |log L - log L_start| <= 0.1 at 456 x 81 support points; the local problem is solved by SLSQP.
-Prices on four sets of 32,768 paths, derivatives by pathwise differentiation.
+Prices on four sets of 16,384 paths, derivatives by pathwise differentiation.
 
 ## Evaluation (Section 3.4)
 

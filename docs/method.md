@@ -65,13 +65,22 @@ tabulated on a rectangle in $(t, u)$ and interpolated bilinearly (`leverage/tabl
 ## The coordinates
 
 From the SSVI fit of the target, with ATM total variance $\theta(t)$ and parameters $\eta$ and
-$\gamma$, the state coordinate is
+$\gamma$, let
 
-$$u(t, x) = \frac{2}{\pi}\arctan\frac{x}{s(t)},\qquad s(t) = \frac{\theta(\max(t, t_{\min}))^\gamma}{\eta},$$
+$$u(t, x) = \frac{2}{\pi}\arctan\frac{x}{s(t)},\qquad s(t) = \frac{\theta(\max(t, t_{\min}))^\gamma}{\eta}.$$
 
-and the time coordinate maps $s(t)$ affinely onto $[-1, 1]$. The state coordinate is clipped to an
-envelope read off the paths simulated with $L^{(0)}$: the 99.9% quantile of $|u|$ at each node,
-widened to its running maximum and capped at $9.2$ ATM standard deviations (`leverage/chart.py`).
+The time coordinate maps $s(t)$ affinely onto $[-1, 1]$ and is held at its value at the first
+node of the time grid below it. The state coordinate is $u$ clipped to
+$[u_\varepsilon(t), u_{1-\varepsilon}(t)]$ and mapped affinely onto $[-1, 1]$,
+
+$$v(t, x) = \frac{2\,\mathrm{clip}(u, u_\varepsilon, u_{1-\varepsilon}) - u_{1-\varepsilon} - u_\varepsilon}{u_{1-\varepsilon} - u_\varepsilon},\qquad u_\varepsilon(t) = u(t, x_\varepsilon(t)),$$
+
+where $x_\varepsilon(t)$ is the quantile of $X_t$ at probability $\varepsilon$ under the law that the
+SSVI fit implies, $\mathbb P(X_t \le x) = \Phi(-d_2) + \varphi(d_2)\,\partial_x\sqrt{w(t, x)}$ with
+$d_2 = -x/\sqrt{w} - \sqrt{w}/2$ (`targets/quantiles.py`). The quantiles are tabulated at the
+times of the table of $L^{(0)}$ and interpolated linearly in $t$. With $\varepsilon = \kappa/N$
+for $N$ training paths, about $\kappa$ paths lie beyond each edge at each time, and beyond the
+edges the leverage factor is constant in $x$ (`leverage/chart.py`).
 
 ## Simulation
 

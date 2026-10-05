@@ -58,13 +58,13 @@ def test_support_points_span_the_envelope():
     points = np.stack((t, x), axis=1)
     np.testing.assert_array_equal(points, np.unique(points, axis=0))
     assert np.unique(np.asarray(t)).size == 9
-    u = CHART(t, x)[:, 1]
-    lower, upper = (
-        jnp.interp(t, *CHART.envelope[:2]),
-        jnp.interp(t, CHART.envelope[0], CHART.envelope[2]),
-    )
-    assert bool(jnp.all((u >= lower - 1e-12) & (u <= upper + 1e-12)))
-    np.testing.assert_allclose(CHART(1.0, CHART.log_moneyness(1.0, 0.4))[1], 0.4, atol=1e-14)
+    v = np.asarray(CHART(t, x)[:, 1])
+    assert np.all(np.abs(v) <= 1 + 1e-12)
+    for time in np.unique(np.asarray(t))[1:]:
+        np.testing.assert_allclose(
+            np.sort(v[np.asarray(t) == time]), np.linspace(-1, 1, 5), atol=1e-12
+        )
+    np.testing.assert_allclose(CHART(1.0, CHART.log_moneyness(1.0, 0.4))[1], 0.4 / 0.6, atol=1e-14)
 
 
 def test_path_gram_equals_the_dense_sum():

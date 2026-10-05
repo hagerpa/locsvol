@@ -5,7 +5,7 @@
 1. The quotes of the earlier day, their target and the fit of the backbone (Section 3.2).
 2. The quotes of the event day and their target: SSVI, refined SVI, Dupire (Section 3.1).
 3. The time grid, the coordinates, the base L0 = min(sigma_Dup, 5) and the target, tabulated; the
-   training paths and the envelope of the coordinates (Section 3.3).
+   edges of the state coordinate at quantiles of the SSVI fit; the training paths (Section 3.3).
 4. Twelve fixed-point iterations for each basis (Algorithm 2.1).
 5. The particle method of Guyon and Henry-Labordere on the same paths.
 6. Four correction steps after 0, 3, 5 and 8 iterations for each basis.
@@ -41,7 +41,14 @@ from locsvol.calibration import (
     variance_swap_volatility,
     widened_intervals,
 )
-from locsvol.leverage import Capped, Chart, Parametrized, envelope, table_times, tabulate
+from locsvol.leverage import (
+    Capped,
+    Chart,
+    Parametrized,
+    quantile_envelope,
+    table_times,
+    tabulate,
+)
 from locsvol.pricing import monte_carlo_prices, replicated_prices
 from locsvol.regression import ChebyshevTensor, GammaRegression
 from locsvol.simulation import (
@@ -180,7 +187,8 @@ def calibrate(output, backbone, quotes, target, model, times, streams):
         ]
 
     def coordinates():
-        bounds = envelope(chart, times, paths().log_spot(base), **s.ENVELOPE)
+        level = s.PATHS_BEYOND_EDGE / s.TRAINING_PATHS
+        bounds = quantile_envelope(chart, target["ssvi"].extended(s.HORIZON), base.times, level)
         return chart.with_envelope(*bounds, time_clamp=float(times[1]))
 
     fitted_chart = kept(output / "coordinates.npz", coordinates)

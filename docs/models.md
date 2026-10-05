@@ -53,7 +53,7 @@ stream, and returns `Paths`. `log_spot` runs the Euler scheme of $X$ for a lever
 
 | Model | Definition |
 |---|---|
-| `Chart` | The coordinates $(\tau, u)$ of the paper: $u = \tfrac{2}{\pi}\arctan(x / s(t))$ with the SSVI scale $s(t) = \theta(t)^\gamma/\eta$, and $\tau$ affine in $s(t)$; `envelope` clips $u$ to the states the paths reach |
+| `Chart` | The coordinates $(\tau, u)$ of the paper: $u = \tfrac{2}{\pi}\arctan(x / s(t))$ with the SSVI scale $s(t) = \theta(t)^\gamma/\eta$, and $\tau$ affine in $s(t)$; with an envelope, $u$ clipped to it and mapped onto $[-1, 1]$; `quantile_envelope` places the envelope at the quantiles of a surface |
 | `Affine`, `Bounded`, `CustomChart` | Other coordinates: affine in $(t, x)$, arctan with a fixed scale, or a function of the caller |
 | `Table`, `tabulate` | A positive function tabulated on the chart's state coordinate at the times of `table_times`, interpolated in between |
 | `Capped` | $\min(\sigma(t, x), c)$ read inside log-moneyness bounds; the base $L_0 = \min(\sigma_{\mathrm{Dup}}, 5)$ |

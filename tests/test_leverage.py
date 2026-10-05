@@ -2,12 +2,14 @@
 
 import jax.numpy as jnp
 import numpy as np
+from jax.scipy.special import ndtri
 
 import locsvol  # noqa: F401
-from locsvol.leverage.chart import Chart, envelope
+from locsvol.leverage.chart import Chart, quantile_envelope
 from locsvol.leverage.parametrized import Parametrized
 from locsvol.leverage.table import Capped, Table, table_times, tabulate
 from locsvol.regression.chebyshev import ChebyshevTensor
+from locsvol.targets.analytic import ConstantVolatility
 
 
 def chart(**changes):
@@ -25,14 +27,30 @@ def test_state_coordinate_inverts_and_time_coordinate_spans_the_interval():
     np.testing.assert_allclose(clamped.time(0.05), clamped.time(0.2))
 
 
-def test_envelope_clips_the_state_coordinate():
+def test_envelope_clips_the_state_coordinate_and_maps_it_onto_the_interval():
     c = chart()
     times = jnp.asarray([0.0, 0.5, 1.0])
-    paths = jnp.asarray(np.random.default_rng(0).normal(0.0, 0.2, (2000, 3)))
-    _, lower, upper = envelope(c, times, paths, quantile=0.9, cap_sigmas=None)
-    assert bool(jnp.all(jnp.diff(upper) >= 0)) and bool(jnp.all(lower == -upper))
-    clipped = c.with_envelope(times, lower, upper)
-    assert float(jnp.max(jnp.abs(clipped(0.5, paths[:, 1])[:, 1]))) <= float(upper[1]) + 1e-15
+    lower, upper = jnp.asarray([0.0, -0.8, -0.9]), jnp.asarray([0.0, 0.6, 0.7])
+    stretched = c.with_envelope(times, lower, upper)
+    t = jnp.full(5, 0.5)
+    u = jnp.asarray([-0.95, -0.8, -0.1, 0.6, 0.9])
+    x = c.log_moneyness(t, u)
+    np.testing.assert_allclose(
+        stretched(t, x)[:, 1], [-1.0, -1.0, 2 * (-0.1 + 0.8) / 1.4 - 1, 1.0, 1.0], atol=1e-13
+    )
+    np.testing.assert_array_equal(stretched(jnp.zeros(2), jnp.asarray([-0.1, 0.1]))[:, 1], 0.0)
+
+
+def test_quantile_envelope_of_a_lognormal_law():
+    c = chart()
+    sigma, level = 0.2, 1e-3
+    times = jnp.asarray([0.0, 0.1, 0.5, 1.0])
+    _, lower, upper = quantile_envelope(c, ConstantVolatility(sigma), times, level)
+    w = sigma**2 * times[1:]
+    for edge, probability in ((lower, level), (upper, 1 - level)):
+        x = -w / 2 + jnp.sqrt(w) * ndtri(probability)
+        np.testing.assert_allclose(c.log_moneyness(times[1:], edge[1:]), x, atol=1e-8)
+        assert float(edge[0]) == 0.0
 
 
 def test_table_interpolates_linearly_and_caps():
