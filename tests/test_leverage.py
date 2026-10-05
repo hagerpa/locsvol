@@ -82,4 +82,8 @@ def test_parametrized_leverage_at_one_time_equals_the_vector_evaluation():
         leverage(jnp.asarray(0.4), x), leverage(jnp.full(7, 0.4), x), rtol=1e-13
     )
     np.testing.assert_allclose(Parametrized(base, c, basis, 0 * beta)(0.4, x), 0.2, rtol=1e-14)
+    t = jnp.linspace(0.01, 1.0, 7)
+    np.testing.assert_allclose(
+        leverage.log_factor(t, x), basis(c(t, x)) @ beta, rtol=1e-13, atol=1e-15
+    )
     np.testing.assert_allclose(leverage.shifted(-beta).coefficients, 0.0)

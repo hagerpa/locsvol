@@ -21,6 +21,7 @@ the van der Corput sequence v_m in base two, so that every node is used equally 
 carries k times the trapezoidal weight of its time.
 """
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
@@ -43,6 +44,16 @@ def every_kth_node(paths, nodes, k):
     return np.arange(nodes)[None, :] % k == first[:, None]
 
 
+def blockwise(function, t, x, size=262144):
+    """function(t, x), evaluated on consecutive blocks of size rows."""
+    count = t.size
+    blocks = -(-count // size)
+    pad = blocks * size - count
+    tb = jnp.pad(t, (0, pad), constant_values=t[-1]).reshape(blocks, size)
+    xb = jnp.pad(x, (0, pad), constant_values=x[-1]).reshape(blocks, size)
+    return jax.lax.map(lambda block: function(*block), (tb, xb)).reshape(-1)[:count]
+
+
 def fixed_point(leverage, target, paths, regression, iterations, k=4):
     """The leverage factors L_1, ..., L_iterations, starting from L_0 = leverage.
 
@@ -57,7 +68,9 @@ def fixed_point(leverage, target, paths, regression, iterations, k=4):
     alpha, iterates = None, []
     for _ in range(iterations):
         x = paths.log_spot(leverage)[rows]
-        offset = 2 * jnp.log(target(t, x)) - 2 * jnp.log(leverage(t, x))
+        offset = blockwise(
+            lambda tb, xb, leverage=leverage: 2 * jnp.log(target(tb, xb) / leverage(tb, xb)), t, x
+        )
         alpha = regression.fit(leverage.coordinates(t, x), y, w, offset, start=alpha)
         leverage = leverage.shifted(-alpha / 2)
         iterates.append(leverage)

@@ -6,7 +6,7 @@ import jax.numpy as jnp
 import numpy as np
 
 import locsvol  # noqa: F401
-from locsvol.calibration.fixed_point import every_kth_node, fixed_point
+from locsvol.calibration.fixed_point import blockwise, every_kth_node, fixed_point
 from locsvol.calibration.particle import particle_method
 from locsvol.leverage.chart import Chart
 from locsvol.leverage.parametrized import Parametrized
@@ -69,3 +69,13 @@ def test_fixed_point_and_particle_method_satisfy_the_calibration_condition():
     bounds = jnp.concatenate((jnp.ones((1, 2)), jnp.exp(spread)))
     particle = particle_method(flat(0.2), paths, bounds, jnp.full(25, 0.2))
     assert calibration_error(particle, paths, 13) < 0.03
+
+
+def test_blockwise_equals_the_direct_evaluation():
+    t = jnp.linspace(0.0, 1.0, 1001)
+    x = jnp.sin(7 * t)
+
+    def function(t, x):
+        return jnp.exp(t) * x
+
+    np.testing.assert_array_equal(blockwise(function, t, x, size=64), function(t, x))

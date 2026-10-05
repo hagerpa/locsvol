@@ -38,16 +38,20 @@ class Parametrized:
         return self.chart(t, x)
 
     def log_factor(self, t, x):
-        """b(chart(t, x))^T beta. At a single time the Chebyshev time polynomials are evaluated
-        once."""
+        """b(chart(t, x))^T beta; for the Chebyshev tensor basis
+        sum_j T_j(u) sum_i T_i(tau) beta_ij."""
         z = self.chart(t, x)
-        if jnp.ndim(t) == 0 and isinstance(self.basis, ChebyshevTensor):
-            p, q = self.basis.degrees
+        if not isinstance(self.basis, ChebyshevTensor):
+            return self.basis(z) @ self.coefficients
+        p, q = self.basis.degrees
+        table = self.coefficients.reshape(p + 1, q + 1)
+        state = chebyshev(z[..., 1], q)
+        if jnp.ndim(t) == 0:
             time = chebyshev(self.chart(t, jnp.asarray(0.0))[0], p)
-            state = chebyshev(z[..., 1], q)
-            values = state @ (time @ self.coefficients.reshape(p + 1, q + 1))
-            return jnp.where(jnp.isfinite(z[..., 0]), values, jnp.nan)
-        return self.basis(z) @ self.coefficients
+            values = state @ (time @ table)
+        else:
+            values = jnp.sum((chebyshev(z[..., 0], p) @ table) * state, axis=-1)
+        return jnp.where(jnp.isfinite(z[..., 0]), values, jnp.nan)
 
     def __call__(self, t, x):
         value = jnp.exp(jnp.log(self.base(t, x)) + self.log_factor(t, x))
