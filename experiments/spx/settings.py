@@ -38,8 +38,6 @@ BERGOMI_CUMULATIVE_RADIUS = 1.5
 HESTON_FLOOR = 1e-8
 
 # Leverage factor (Section 3.3)
-BASE_CAP = 5.0
-DOMAIN_MARGIN = 0.1  # the base reads the target this far inside its log-moneyness domain
 TIME_FLOOR = 1e-3  # the coordinates read theta at max(t, 0.001)
 TABLE = dict(
     head_start=1e-4 * DAY,
@@ -50,8 +48,8 @@ TABLE = dict(
 )
 STATE_LIMIT = 0.995
 STATE_NODES = 801
-PATHS_BEYOND_EDGE = 3.2768  # kappa: the edges of the state coordinate are the SSVI quantiles at
-# eps = kappa / N and 1 - eps for N = TRAINING_PATHS, eps = 2e-4
+PATHS_BEYOND_EDGE = 3.2768  # kappa: the local volatility is read, and the state coordinate ends, at
+# the SSVI quantiles x_eps(t) and x_{1-eps}(t), eps = kappa / N for N = TRAINING_PATHS (2e-4)
 DEGREES = ((10, 12), (6, 8))  # Chebyshev degrees in time and state
 RIDGE = 2.5e-7  # on the coefficients alpha = 2 zeta of the regression
 ROW_STRIDE = 4  # every fourth time node of every path

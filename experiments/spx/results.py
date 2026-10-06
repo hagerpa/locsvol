@@ -179,7 +179,8 @@ def parameters(pair, model, target, coordinates, models):
         target=dict(ssvi=plain(target["ssvi"]), refined_svi=plain(target["surface"])),
         coordinates=plain(coordinates),
         leverage=dict(
-            base="min(Dupire local volatility of the target, 5), tabulated",
+            base="Dupire local volatility of the target, read at x clipped to the quantiles of the "
+            "SSVI fit, tabulated",
             basis="Chebyshev tensor, time-outer: coefficient i(q+1)+j multiplies T_i(tau) T_j(u)",
             models=coefficients,
         ),
@@ -441,7 +442,7 @@ def publish(pair, backbone, data, output):
     folder.mkdir(parents=True, exist_ok=True)
     target_row = target_statistics(comparison, target["surface"])
     write_json(folder / "summary.json", summary(pair, backbone, statistics, target_row))
-    coordinates = lsv.load(output / "coordinates.npz")
+    coordinates = lsv.load(output / "leverage-inputs.npz")["chart"]
     write_json(folder / "parameters.json", parameters(pair, model, target, coordinates, models))
     estimates = {name: (statistics[name][0], statistics[name][1]) for name in names}
     pooled_by_name = {name: pooled[i] for i, name in enumerate(names)}

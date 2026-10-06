@@ -59,8 +59,10 @@ $$L^{(i+1)} = L_{\beta^{(i)}} \exp(-b^\top \alpha^{(i)} / 2),\qquad
 Each regression is strictly convex: the loss has second derivative $y e^{-\eta} > 0$ in the
 linear predictor $\eta$, and a ridge penalty makes it strictly convex in $\alpha$.
 
-The base $L^{(0)} = \min(\sigma_{\mathrm{Dup}}, 5)$, read inside the domain of the target, is
-tabulated on a rectangle in $(t, u)$ and interpolated bilinearly (`leverage/table.py`).
+The target $\sigma_{\mathrm{Dup}}$ is read at $x$ clipped to the quantiles $x_\varepsilon(t)$ and
+$x_{1-\varepsilon}(t)$ of the coordinates below, so that it is constant in $x$ beyond them, and is
+tabulated on a rectangle in $(t, u)$ and interpolated bilinearly (`leverage/table.py`); the
+iteration starts from $L^{(0)} = \sigma_{\mathrm{Dup}}$.
 
 ## The coordinates
 
@@ -78,7 +80,7 @@ $$v(t, x) = \frac{2\,\mathrm{clip}(u, u_\varepsilon, u_{1-\varepsilon}) - u_{1-\
 where $x_\varepsilon(t)$ is the quantile of $X_t$ at probability $\varepsilon$ under the law that the
 SSVI fit implies, $\mathbb P(X_t \le x) = \Phi(-d_2) + \varphi(d_2)\,\partial_x\sqrt{w(t, x)}$ with
 $d_2 = -x/\sqrt{w} - \sqrt{w}/2$ (`targets/quantiles.py`). The quantiles are tabulated at the
-times of the table of $L^{(0)}$ and interpolated linearly in $t$. With $\varepsilon = \kappa/N$
+times of the table and interpolated linearly in $t$. With $\varepsilon = \kappa/N$
 for $N$ training paths, about $\kappa$ paths lie beyond each edge at each time, and beyond the
 edges the leverage factor is constant in $x$ (`leverage/chart.py`).
 

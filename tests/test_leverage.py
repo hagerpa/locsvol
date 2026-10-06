@@ -5,9 +5,9 @@ import numpy as np
 from jax.scipy.special import ndtri
 
 import locsvol  # noqa: F401
-from locsvol.leverage.chart import Chart, quantile_envelope
+from locsvol.leverage.chart import Chart, quantile_bounds, quantile_envelope
 from locsvol.leverage.parametrized import Parametrized
-from locsvol.leverage.table import Capped, Table, table_times, tabulate
+from locsvol.leverage.table import Clipped, Table, table_times, tabulate
 from locsvol.regression.chebyshev import ChebyshevTensor
 from locsvol.targets.analytic import ConstantVolatility
 
@@ -45,12 +45,15 @@ def test_quantile_envelope_of_a_lognormal_law():
     c = chart()
     sigma, level = 0.2, 1e-3
     times = jnp.asarray([0.0, 0.1, 0.5, 1.0])
-    _, lower, upper = quantile_envelope(c, ConstantVolatility(sigma), times, level)
+    surface = ConstantVolatility(sigma)
+    _, lower, upper = quantile_bounds(surface, times, level)
+    _, u_lower, u_upper = quantile_envelope(c, surface, times, level)
     w = sigma**2 * times[1:]
-    for edge, probability in ((lower, level), (upper, 1 - level)):
+    for edge, u_edge, probability in ((lower, u_lower, level), (upper, u_upper, 1 - level)):
         x = -w / 2 + jnp.sqrt(w) * ndtri(probability)
-        np.testing.assert_allclose(c.log_moneyness(times[1:], edge[1:]), x, atol=1e-8)
-        assert float(edge[0]) == 0.0
+        np.testing.assert_allclose(edge[1:], x, atol=1e-8)
+        np.testing.assert_allclose(c.log_moneyness(times[1:], u_edge[1:]), x, atol=1e-8)
+        assert float(edge[0]) == 0.0 and float(u_edge[0]) == 0.0
 
 
 def test_table_interpolates_linearly_and_caps():
@@ -65,28 +68,11 @@ def test_table_interpolates_linearly_and_caps():
     x = jnp.asarray([-0.3, 0.05, 0.4])
     np.testing.assert_allclose(table(t, x), plane(t, x), rtol=1e-12)
     np.testing.assert_allclose(table(jnp.asarray(0.33), x), plane(jnp.asarray(0.33), x), rtol=1e-12)
-    capped = Capped(plane, 0.21, -0.2, 0.2)
+    bounds = jnp.asarray([0.0, 1.0])
+    clipped = Clipped(plane, bounds, jnp.asarray([-0.1, -0.3]), jnp.asarray([0.1, 0.3]))
     x = jnp.asarray([-1.0, 0.1, 1.0])
-    expected = jnp.minimum(plane(jnp.asarray(0.5), jnp.clip(x, -0.2, 0.2)), 0.21)
-    np.testing.assert_allclose(capped(jnp.asarray(0.5), x), expected)
-
-
-def test_table_takes_the_value_toward_the_money_where_the_function_has_none():
-    c = chart()
-
-    def gapped(t, x):
-        value = 0.2 + 0.1 * t + 0.05 * c(t, x)[..., 1]
-        return jnp.where(x > 0.3, jnp.nan, jnp.where(x < -0.4, -1.0, value))
-
-    times = jnp.asarray([0.0, 0.5, 1.0])
-    table = tabulate(gapped, c, times)
-    values = np.asarray(table.values)
-    x = np.asarray(c.log_moneyness(times[:, None], table.nodes[None, :]))
-    assert np.all(np.isfinite(values)) and np.all(values > 0)
-    for row in range(times.size):
-        inside = np.flatnonzero((x[row] >= -0.4) & (x[row] <= 0.3))
-        np.testing.assert_array_equal(values[row, x[row] > 0.3], values[row, inside[-1]])
-        np.testing.assert_array_equal(values[row, x[row] < -0.4], values[row, inside[0]])
+    expected = plane(jnp.asarray(0.5), jnp.clip(x, -0.2, 0.2))
+    np.testing.assert_allclose(clipped(jnp.asarray(0.5), x), expected, rtol=1e-14)
 
 
 def test_parametrized_leverage_at_one_time_equals_the_vector_evaluation():

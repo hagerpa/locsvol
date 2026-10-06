@@ -42,12 +42,12 @@ backbone = Bergomi(nu=2.0, theta=0.2, rho1=-0.7, rho2=-0.3)
 paths = simulate(backbone, times, dict(seed=1, role="calibration"), 16384)
 
 basis = ChebyshevTensor((6, 8))
-start = Parametrized(base, chart, basis, jnp.zeros(basis.size))  # L = L_0 exp(b^T beta)
+start = Parametrized(local_volatility, chart, basis, jnp.zeros(basis.size))  # L = sigma_Dup exp(b^T beta)
 iterates = fixed_point(start, local_volatility, paths, GammaRegression(basis, ridge=1e-6), 5)
 ```
 
-where the time grid `times`, the chart and the tabulated `base` $L_0 = \min(\sigma_{\mathrm{Dup}}, 5)$
-and `local_volatility` are set up as in the script. The calibrated model reproduces the quotes
+where the time grid `times`, the chart and the tabulated target `local_volatility` are set up as
+in the script. The calibrated model reproduces the quotes
 within 12 basis points of implied volatility.
 
 ## Contents

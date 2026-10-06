@@ -56,7 +56,7 @@ stream, and returns `Paths`. `log_spot` runs the Euler scheme of $X$ for a lever
 | `Chart` | The coordinates $(\tau, u)$ of the paper: $u = \tfrac{2}{\pi}\arctan(x / s(t))$ with the SSVI scale $s(t) = \theta(t)^\gamma/\eta$, and $\tau$ affine in $s(t)$; with an envelope, $u$ clipped to it and mapped onto $[-1, 1]$; `quantile_envelope` places the envelope at the quantiles of a surface |
 | `Affine`, `Bounded`, `CustomChart` | Other coordinates: affine in $(t, x)$, arctan with a fixed scale, or a function of the caller |
 | `Table`, `tabulate` | A positive function tabulated on the chart's state coordinate at the times of `table_times`, interpolated in between |
-| `Capped` | $\min(\sigma(t, x), c)$ read inside log-moneyness bounds; the base $L_0 = \min(\sigma_{\mathrm{Dup}}, 5)$ |
+| `Clipped` | $\sigma(t, \mathrm{clip}(x, x_{\mathrm{lo}}(t), x_{\mathrm{hi}}(t)))$: a local volatility held constant in $x$ beyond bounds that depend on $t$, for instance the quantiles of the target (`quantile_bounds`) |
 | `Parametrized` | $L_\beta = L_0 \exp(b(\tau, u)^\top \beta)$ |
 
 ## Regression (`locsvol.regression`)

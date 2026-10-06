@@ -14,9 +14,9 @@ in t, the state coordinate is u clipped to the envelope and mapped affinely onto
 
 and v = 0 where u_lo = u_hi; without an envelope it is u.
 
-quantile_envelope places the envelope at the images u(t, x_eps(t)) and u(t, x_{1-eps}(t)) of the
-quantiles of a surface: P(X_t <= x_eps(t)) = eps under the law of X_t that the surface's prices
-imply (targets.quantiles).
+quantile_bounds gives the quantiles x_eps(t) and x_{1-eps}(t) of a surface, P(X_t <= x_eps(t)) = eps
+under the law of X_t that the surface's prices imply (targets.quantiles), and quantile_envelope
+their images u(t, x_eps(t)) and u(t, x_{1-eps}(t)).
 """
 
 from dataclasses import dataclass
@@ -118,14 +118,21 @@ class Chart:
         )
 
 
-def quantile_envelope(chart, surface, times, level, bracket=(-20.0, 20.0)):
-    """Envelope (times, lower, upper) at the images u(t, x_eps(t)) and u(t, x_{1-eps}(t)) of the
-    quantiles of the surface at eps = level; both are 0 at t = 0."""
+def quantile_bounds(surface, times, level, bracket=(-20.0, 20.0)):
+    """(times, x_eps, x_{1-eps}): the quantiles of the surface at eps = level and 1 - eps at the
+    times; both are 0 at t = 0."""
     times = jnp.asarray(times, dtype=float)
     positive = times > 0
     inner = jnp.where(positive, times, 1.0)
     brackets = jnp.tile(jnp.asarray(bracket, dtype=float), (times.size, 1))
     x = digital_quantiles(surface, inner, jnp.asarray([level, 1.0 - level]), brackets)
     x = jnp.where(positive[:, None], x, 0.0)
-    u = (2 / jnp.pi) * jnp.arctan(x / chart.scale(times)[:, None])
-    return times, u[:, 0], u[:, 1]
+    return times, x[:, 0], x[:, 1]
+
+
+def quantile_envelope(chart, surface, times, level, bracket=(-20.0, 20.0)):
+    """Envelope (times, lower, upper) at the images u(t, x_eps(t)) and u(t, x_{1-eps}(t)) of the
+    quantiles of the surface at eps = level."""
+    times, lower, upper = quantile_bounds(surface, times, level, bracket)
+    scale = chart.scale(times)
+    return times, (2 / jnp.pi) * jnp.arctan(lower / scale), (2 / jnp.pi) * jnp.arctan(upper / scale)

@@ -4,8 +4,8 @@
 
 1. The quotes of the earlier day, their target and the fit of the backbone (Section 3.2).
 2. The quotes of the event day and their target: SSVI, refined SVI, Dupire (Section 3.1).
-3. The time grid, the coordinates, the base L0 = min(sigma_Dup, 5) and the target, tabulated; the
-   edges of the state coordinate at quantiles of the SSVI fit; the training paths (Section 3.3).
+3. The time grid, the coordinates and the target sigma_Dup, read at x clipped to the quantiles of
+   the SSVI fit and tabulated; the state coordinate ends at the same quantiles (Section 3.3).
 4. Twelve fixed-point iterations for each basis (Algorithm 2.1).
 5. The particle method of Guyon and Henry-Labordere on the same paths.
 6. Four correction steps after 0, 3, 5 and 8 iterations for each basis.
@@ -42,9 +42,10 @@ from locsvol.calibration import (
     widened_intervals,
 )
 from locsvol.leverage import (
-    Capped,
     Chart,
+    Clipped,
     Parametrized,
+    quantile_bounds,
     quantile_envelope,
     table_times,
     tabulate,
@@ -134,8 +135,9 @@ def fit_backbone(backbone, quotes, surface, streams):
 
 
 def leverage_inputs(target, times):
-    """The coordinates, the base L0 = min(sigma_Dup, 5) and the target sigma_Dup, both read
-    0.1 inside the domain of the surface and tabulated."""
+    """The coordinates and the target local volatility sigma_Dup, read at x clipped to the
+    quantiles x_eps(t) and x_{1-eps}(t) of the SSVI fit and tabulated; the leverage factors start
+    from L0 = sigma_Dup. The state coordinate ends at the same quantiles."""
     reference = target["ssvi"].extended(s.HORIZON)
     chart = Chart(
         reference.theta_times,
@@ -145,15 +147,12 @@ def leverage_inputs(target, times):
         (0.0, s.HORIZON),
         s.TIME_FLOOR,
     )
-    dupire = Dupire(target["surface"])
-    lower, upper = dupire.log_moneyness_bounds
     nodes = table_times(target["surface"].expiries, s.HORIZON, **s.TABLE, required=times)
-
-    def table(cap):
-        local_volatility = Capped(dupire, cap, lower + s.DOMAIN_MARGIN, upper - s.DOMAIN_MARGIN)
-        return tabulate(local_volatility, chart, nodes, s.STATE_LIMIT, s.STATE_NODES)
-
-    return dict(chart=chart, base=table(s.BASE_CAP), target=table(None))
+    bounds = quantile_bounds(reference, nodes, s.PATHS_BEYOND_EDGE / s.TRAINING_PATHS)
+    local_volatility = Clipped(Dupire(target["surface"]), *bounds)
+    table = tabulate(local_volatility, chart, nodes, s.STATE_LIMIT, s.STATE_NODES)
+    envelope = quantile_envelope(chart, reference, nodes, s.PATHS_BEYOND_EDGE / s.TRAINING_PATHS)
+    return dict(chart=chart.with_envelope(*envelope, time_clamp=float(times[1])), target=table)
 
 
 def particle_bounds(surface, times):
@@ -173,7 +172,8 @@ def label(degrees, iterations, steps=0):
 def calibrate(output, backbone, quotes, target, model, times, streams):
     """Steps 3 to 6: every model of the study, by name."""
     inputs = kept(output / "leverage-inputs.npz", lambda: leverage_inputs(target, times))
-    chart, base, local_volatility = inputs["chart"], inputs["base"], inputs["target"]
+    chart, local_volatility = inputs["chart"], inputs["target"]
+    base = local_volatility
 
     @cache
     def paths():
@@ -186,17 +186,11 @@ def calibrate(output, backbone, quotes, target, model, times, streams):
             for r in range(s.CORRECTION_REPLICATIONS)
         ]
 
-    def coordinates():
-        level = s.PATHS_BEYOND_EDGE / s.TRAINING_PATHS
-        bounds = quantile_envelope(chart, target["ssvi"].extended(s.HORIZON), base.times, level)
-        return chart.with_envelope(*bounds, time_clamp=float(times[1]))
-
-    fitted_chart = kept(output / "coordinates.npz", coordinates)
     models = {"starting point L0": base}
     iterates = {}
     for degrees in s.DEGREES:
         basis = ChebyshevTensor(degrees)
-        start = Parametrized(base, fitted_chart, basis, jnp.zeros(basis.size))
+        start = Parametrized(base, chart, basis, jnp.zeros(basis.size))
         regression = GammaRegression(basis, ridge=s.RIDGE)
 
         def iterate(start=start, regression=regression):
@@ -216,7 +210,7 @@ def calibrate(output, backbone, quotes, target, model, times, streams):
         return particle_method(local_volatility, paths(), bounds, volatility)
 
     models["particle method"] = kept(output / "particle.npz", particle)
-    support = support_points(fitted_chart, times, *s.SUPPORT)
+    support = support_points(chart, times, *s.SUPPORT)
     calls = jnp.ones(quotes.maturities.size, dtype=bool)
     for degrees in s.DEGREES:
         for n in s.CORRECTION_STARTS:

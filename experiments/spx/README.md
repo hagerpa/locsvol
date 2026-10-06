@@ -46,7 +46,8 @@ prices are interpolated linearly in the square root of the ATM total variance; b
 maturity the total variance grows with slope 0.04; below the first maturity T_1 the surface is
 extended by w(t, k) = (t/T_1)(1 + c(1 - t/T_1)) w(T_1, k sqrt((T_1 + t_0)/(t + t_0))), with t_0
 and c chosen so that the forward variance of the log-contract is continuous at T_1. The target
-local volatility follows by the Dupire formula.
+local volatility follows by the Dupire formula and is read at x clipped to the quantiles of the
+SSVI fit at probabilities eps and 1 - eps (below), where prices determine the surface.
 
 ## Backbones (Section 3.2)
 
@@ -68,8 +69,8 @@ local volatility follows by the Dupire formula.
 
 | | |
 |---|---|
-| Base L0 | Dupire local volatility capped at 5, read 0.1 inside the domain of the target, tabulated at 801 equally spaced values of the state coordinate; where the Dupire formula has no value, far beyond the quotes, a node takes the value of its neighbour toward the money; the target sigma_Dup is tabulated in the same way |
-| Coordinates | state u = (2/pi) arctan(x / s(t)) with s(t) = theta(max(t, 0.001))^gamma / eta from the SSVI fit; time: s(t) mapped onto [-1, 1] over [0, 1.1] and held below the first grid node; u clipped to [u(t, x_eps(t)), u(t, x_{1-eps}(t))] and mapped affinely onto [-1, 1], where x_eps(t) is the quantile of X_t at probability eps under the law implied by the SSVI fit, eps = kappa / N with N = 16,384 training paths and kappa = 3.2768, so eps = 2 * 10^-4 and about three paths lie beyond each edge at each time; the quantiles are tabulated at the times of the table of L0 and interpolated linearly in t; beyond the edges the leverage factor is constant in x |
+| Target and base | the Dupire local volatility sigma_Dup of the refined SVI surface, read at x clipped to [x_eps(t), x_{1-eps}(t)], the quantiles of X_t at probabilities eps and 1 - eps under the law implied by the SSVI fit, and tabulated at 801 equally spaced values of the state coordinate; eps = kappa / N with N = 16,384 training paths and kappa = 3.2768, so eps = 2 * 10^-4; the iteration starts from L0 = sigma_Dup |
+| Coordinates | state u = (2/pi) arctan(x / s(t)) with s(t) = theta(max(t, 0.001))^gamma / eta from the SSVI fit; time: s(t) mapped onto [-1, 1] over [0, 1.1] and held below the first grid node; u clipped to [u(t, x_eps(t)), u(t, x_{1-eps}(t))], the images of the same quantiles, and mapped affinely onto [-1, 1]; the quantiles are tabulated at the times of the table and interpolated linearly in t; about three training paths lie beyond each edge at each time, and beyond the edges the leverage factor is constant in x |
 | Basis | Chebyshev tensor products of degrees (10, 12), 143 coefficients, and (6, 8), 63 coefficients |
 | Regression | Gamma regression with log link, ridge 2.5 * 10^-7 on the coefficients alpha = 2 zeta; every fourth time node of every path, phases by the van der Corput sequence; trapezoidal weights in time |
 | Iterations | 12 on the same paths; models after 3, 5, 8 and 12 iterations are evaluated |
