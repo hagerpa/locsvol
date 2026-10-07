@@ -8,7 +8,8 @@ sqrt(Y_0). At each later node t_j, given the particles (S^k_j, Y^k_j), it
 1. estimates the conditional mean m_j(s) = E[Y_{t_j} | S_{t_j} = s] at N_j nodes s_i by the
    Nadaraya-Watson regression with the quartic kernel and bandwidth h_j;
 2. sets L(t_j, s_i) = sigma_Dup(t_j, log s_i) / sqrt(m_j(s_i)) and interpolates in s by the
-   not-a-knot cubic spline, constant beyond the outer nodes;
+   not-a-knot cubic spline, constant beyond the outer nodes, and simulates with its absolute
+   value, which has the same law;
 3. advances the particles by one Euler step with this leverage factor.
 
 The settings of the book: the nodes are N_j = max(ceil(30 sqrt(t_j)), 15) equally spaced forward
@@ -25,7 +26,7 @@ import jax
 import jax.numpy as jnp
 
 from locsvol.functions import compiled
-from locsvol.regression.cubic import cubic_minimum, flat_cubic, not_a_knot
+from locsvol.regression.cubic import flat_cubic, not_a_knot
 from locsvol.regression.kernel import kernel_means
 from locsvol.simulation.euler import euler_step
 
@@ -57,7 +58,9 @@ class _Slice:
     count: jax.Array
 
     def __call__(self, t, x):
-        return flat_cubic(self.nodes, self.values, self.coefficients, self.count, jnp.exp(x))
+        return jnp.abs(
+            flat_cubic(self.nodes, self.values, self.coefficients, self.count, jnp.exp(x))
+        )
 
 
 _advance = jax.jit(euler_step)
@@ -85,13 +88,15 @@ class ParticleLeverage:
         t, x = jnp.broadcast_arrays(jnp.asarray(t), jnp.asarray(x))
         index = jnp.clip(jnp.searchsorted(self.times, t, side="right") - 1, 0, self.times.size - 2)
         flat = t.size
-        spline = jax.vmap(flat_cubic)(
-            self.nodes[index].reshape(flat, -1),
-            self.values[index].reshape(flat, -1),
-            self.coefficients[index].reshape(flat, *self.coefficients.shape[1:]),
-            self.counts[index].reshape(-1),
-            jnp.exp(x).reshape(-1),
-        ).reshape(t.shape)
+        spline = jnp.abs(
+            jax.vmap(flat_cubic)(
+                self.nodes[index].reshape(flat, -1),
+                self.values[index].reshape(flat, -1),
+                self.coefficients[index].reshape(flat, *self.coefficients.shape[1:]),
+                self.counts[index].reshape(-1),
+                jnp.exp(x).reshape(-1),
+            ).reshape(t.shape)
+        )
 
         def with_origin():
             origin = self.target(jnp.zeros_like(t), x) / jnp.sqrt(self.origin_variance)
@@ -176,8 +181,6 @@ def particle_method(target, paths, bounds, variance_swap, kernel="quartic", bloc
                 raise ValueError(f"no conditional mean at some node of time step {j}")
             values = target(times[j], jnp.log(nodes[j])) / jnp.sqrt(means)
             coefficients = not_a_knot(nodes[j], values, counts[j])
-            if not bool(cubic_minimum(nodes[j], coefficients, counts[j]) >= 0):
-                raise ValueError(f"negative leverage factor at time step {j}")
             values = jnp.where(jnp.arange(capacity) < counts[j], values, values[counts[j] - 1])
         tables.append((values, coefficients))
         leverage = (

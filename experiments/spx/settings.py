@@ -22,9 +22,9 @@ TAIL_STEP = HORIZON / 440
 # Random numbers. The labels in streams() seed the generators; they are those of the published
 # runs, so that the runs are reproduced exactly.
 SEED = 20260913
-TRAINING_PATHS = 16384  # antithetic, scrambled Sobol with a Brownian bridge
-FIT_REPLICATIONS = 4  # sets of 16,384 paths for the Bergomi fit
-CORRECTION_REPLICATIONS = 4  # sets of 16,384 paths for the correction steps
+TRAINING_PATHS = 32768  # antithetic, scrambled Sobol with a Brownian bridge
+FIT_REPLICATIONS = 4  # sets of 32,768 paths for the Bergomi fit
+CORRECTION_REPLICATIONS = 4  # sets of 32,768 paths for the correction steps
 EVALUATION_REPLICATIONS = 20  # sets of 65,536 Sobol paths for every model
 EVALUATION_PATHS = 65536
 PAPER_REPLICATIONS = 320  # sets of 65,536 independent pseudo-random paths, paper's tables
@@ -49,7 +49,7 @@ TABLE = dict(
 STATE_LIMIT = 0.995
 STATE_NODES = 801
 PATHS_BEYOND_EDGE = 3.2768  # kappa: the local volatility is read, and the state coordinate ends, at
-# the SSVI quantiles x_eps(t) and x_{1-eps}(t), eps = kappa / N for N = TRAINING_PATHS (2e-4)
+# the SSVI quantiles x_eps(t) and x_{1-eps}(t), eps = kappa / N for N = TRAINING_PATHS (1e-4)
 DEGREES = ((10, 12), (6, 8))  # Chebyshev degrees in time and state
 RIDGE = 2.5e-7  # on the coefficients alpha = 2 zeta of the regression
 ROW_STRIDE = 4  # every fourth time node of every path
