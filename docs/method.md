@@ -88,7 +88,9 @@ edges the leverage factor is constant in $x$ (`leverage/chart.py`).
 
 The Brownian increments come from scrambled Sobol points with a Brownian bridge and antithetic
 pairs, or from independent pseudo-random numbers (`simulation/random.py`), on a grid graded near
-zero with the quoted maturities as nodes (`simulation/grid.py`). The backbones are the two-factor
+zero with the quoted maturities as nodes (`simulation/grid.py`); for horizons well beyond a year
+the points can restart in segments, so that the first days of the grid keep leading Sobol
+coordinates. The backbones are the two-factor
 Bergomi model, simulated exactly, and the Heston model, by the quadratic-exponential scheme
 (`backbones/`). In the LSV model the variance factor is divided by its exact mean, so that
 $\mathbb E[Y_t] = 1$ and the leverage factor carries the level of the volatility.

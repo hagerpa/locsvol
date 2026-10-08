@@ -65,3 +65,19 @@ def test_euler_scheme_is_a_martingale_with_the_exact_drift():
     np.testing.assert_allclose(jnp.mean(jnp.exp(x[:, -1])), 1.0, atol=2e-3)
     flat = log_spot(leverage, times, jnp.ones((2, times.size)), jnp.zeros((2, 50)))
     np.testing.assert_allclose(flat[:, -1], -0.5 * sigma**2, rtol=1e-12)
+
+
+def test_segmented_increments_have_brownian_variance_and_keep_antithetic_pairs():
+    times = jnp.concatenate((jnp.linspace(0.0, 1.0, 11), jnp.linspace(1.2, 3.0, 10)))
+    one = brownian_increments(times, STREAM, 2048, 2)
+    segmented = brownian_increments(times, STREAM, 2048, 2, segments=(1.0, 2.0))
+    assert segmented.shape == one.shape
+    np.testing.assert_allclose(np.var(segmented[:, :, 0], axis=0), np.diff(times), rtol=0.1)
+    np.testing.assert_array_equal(segmented[:1024], -segmented[1024:])
+    # the first segment is the plain construction on its own grid; the later ones are permuted
+    first = brownian_increments(times[:11], dict(STREAM, segment=0), 2048, 2)
+    np.testing.assert_array_equal(segmented[:, :10], first)
+    second = brownian_increments(times[10:16] - times[10], dict(STREAM, segment=1), 2048, 2)
+    assert not np.array_equal(segmented[:, 10:15], second)
+    np.testing.assert_array_equal(np.sort(segmented[:, 10:15], axis=0), np.sort(second, axis=0))
+    np.testing.assert_array_equal(segmented, brownian_increments(times, STREAM, 2048, 2, segments=(1.0, 2.0)))

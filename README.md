@@ -54,7 +54,7 @@ within 12 basis points of implied volatility.
 
 | | |
 |---|---|
-| Targets | SSVI and SVI surfaces, Dupire local volatility, analytic test surfaces |
+| Targets | SSVI, eSSVI and SVI surfaces, Dupire local volatility, analytic test surfaces |
 | Backbones | two-factor Bergomi, Heston, SABR, constant volatility, and models of your own |
 | Regression | Gamma regression with log link, least squares, bins, kernel estimates, neural networks; Chebyshev and spline bases |
 | Calibration | fixed-point iteration, particle method of Guyon and Henry-Labordère, correction against bid and ask quotes, fits of the backbone |
@@ -67,7 +67,9 @@ implement each step, and [docs/models.md](docs/models.md) describes every model.
 
 [experiments/spx](experiments/spx) contains the calibration to S&P 500 options of the paper: its
 specification, the script that runs it with this package, and the results for every date pair and
-backbone.
+backbone. [experiments/essvi](experiments/essvi) repeats the study on a parametric target of the
+literature, the eSSVI surface of Farkas, Ferrari and Ulrych for SPX on 23 June 2020 with the
+reference models of Beiglböck, Hasenbichler and Pammer as backbones.
 
 ## Installation
 

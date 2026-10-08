@@ -9,6 +9,13 @@ the widest remaining interval, given its two ends. The bridge lets the leading S
 carry the coarse shape of the paths (Glasserman, Monte Carlo Methods in Financial Engineering,
 Sec. 3.1 and 5.2). Antithetic pairs append the negated increments.
 
+With segments, the grid is cut at the given times and every segment gets its own Sobol points
+(an independent scramble) and its own bridge, and the paths of every segment after the first are
+paired with those of the preceding ones by a random permutation; antithetic pairs stay paired.
+A single set of Sobol points spends its leading coordinates on the coarse shape of the whole
+horizon, so on a long grid the first days are driven by deep coordinates and lose the quality of
+the points there; segments of about a year give every part of the grid leading coordinates.
+
 A stream is a dictionary with an integer "seed" and any further entries. Its SHA-256 digest
 seeds the generator: the same dictionary always gives the same numbers, and different
 dictionaries give independent ones.
@@ -117,15 +124,51 @@ def chronological_increments(normals, times):
     return normals * jnp.sqrt(jnp.diff(times))[None, :, None]
 
 
+def segment_nodes(times, segments):
+    """Indices of the nodes nearest to the segment boundaries, with the grid's first and last."""
+    t = np.asarray(times)
+    cuts = sorted({int(np.argmin(np.abs(t - float(b)))) for b in segments} - {0, t.size - 1})
+    return [0, *cuts, t.size - 1]
+
+
 def brownian_increments(
-    times, stream, paths, factors, sobol=True, bridge=True, antithetic=True, bits=64
+    times,
+    stream,
+    paths,
+    factors,
+    sobol=True,
+    bridge=True,
+    antithetic=True,
+    bits=64,
+    segments=(),
 ):
     """Independent Brownian increments (paths, steps, factors) on the grid times.
 
     With antithetic=True, paths counts both halves of the pairs. The first factor drives the
-    spot in every model of this package.
+    spot in every model of this package. segments are the times at which the grid is cut into
+    segments with their own Sobol points (module docstring).
     """
     times = jnp.asarray(times, dtype=jnp.float64)
+    if len(segments):
+        cuts = segment_nodes(times, segments)
+        pieces = []
+        for n, (i, j) in enumerate(zip(cuts[:-1], cuts[1:], strict=True)):
+            piece = brownian_increments(
+                times[i : j + 1] - times[i],
+                dict(stream, segment=n),
+                paths,
+                factors,
+                sobol,
+                bridge,
+                antithetic,
+                bits,
+            )
+            if n > 0:
+                count = paths // 2 if antithetic else paths
+                order = jax.random.permutation(stream_key(dict(stream, segment=n, pairing=True)), count)
+                piece = piece[jnp.concatenate((order, order + count)) if antithetic else order]
+            pieces.append(piece)
+        return jnp.concatenate(pieces, axis=1)
     count, steps = paths // 2 if antithetic else paths, times.size - 1
     if sobol:
         normals = sobol_normals(stream, count, steps, factors, bits)

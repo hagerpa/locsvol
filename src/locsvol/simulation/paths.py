@@ -24,9 +24,9 @@ class Paths:
         return log_spot(leverage, self.times, self.variance, self.spot_increments)
 
 
-def simulate(backbone, times, stream, paths, sobol=True, bridge=True, antithetic=True):
+def simulate(backbone, times, stream, paths, sobol=True, bridge=True, antithetic=True, segments=()):
     """Paths of the backbone's variance factor on the grid times; see brownian_increments."""
     increments = brownian_increments(
-        times, stream, paths, backbone.factors, sobol, bridge, antithetic
+        times, stream, paths, backbone.factors, sobol, bridge, antithetic, segments=segments
     )
     return Paths(times, backbone.variance(times, increments), increments[:, :, 0])

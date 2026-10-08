@@ -262,7 +262,9 @@ def paper_models(models):
     return {name: models[name] for name in dict.fromkeys(names)}
 
 
-def price(folder, models, model, times, comparison, stream, replications, paths, independent):
+def price(
+    folder, models, model, times, comparison, stream, replications, paths, independent, segments=()
+):
     """Prices (replications, quotes + comparison grid) of every model, one file per replication."""
     folder.mkdir(exist_ok=True)
     prices = []
@@ -277,6 +279,7 @@ def price(folder, models, model, times, comparison, stream, replications, paths,
                 sobol=not independent,
                 bridge=not independent,
                 antithetic=not independent,
+                segments=() if independent else segments,
             )
             return {
                 name: monte_carlo_prices(

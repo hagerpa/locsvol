@@ -15,6 +15,7 @@ The target is a total variance surface $w(t, k)$ and its Dupire local volatility
 | Model | Definition |
 |---|---|
 | `SSVI` | Power-law SSVI of Gatheral and Jacquier, $w = \tfrac{\theta}{2}(1 + \rho\varphi k + \sqrt{(\varphi k + \rho)^2 + 1 - \rho^2})$, $\varphi = \eta\theta^{-\gamma}$, with $\theta(t)$ linear between knots; fitted by `fit_ssvi` |
+| `ESSVI` | The extended SSVI of Hendriks and Martini in the form of Farkas, Ferrari and Ulrych: the SSVI shape with $\varphi = \eta\theta^{-\lambda}(1+\theta)^{\lambda-1}$ and $\rho(\theta) = \rho_m + (\rho_0 - \rho_m)e^{-a\theta}$, $\theta(t)$ linear between knots; given, not fitted |
 | `RefinedSVI` | A raw SVI slice at every expiry, interpolated in price between expiries, with a short extension below the first expiry (`short_extension`) and constant forward variance beyond the last; fitted by `fit_svi` from an SSVI fit |
 | `Dupire` | $\sigma_{\mathrm{Dup}}(t, x)$ of any surface, with the derivatives of $w$ by automatic differentiation |
 | `ConstantVolatility`, `TermStructure` | $\sigma_{\mathrm{Dup}} = \sigma$, and $\sigma_{\mathrm{Dup}}(t, x) = \sqrt{\xi(t)}$ for a piecewise constant forward variance |
@@ -46,7 +47,9 @@ The fits `fit_bergomi` (Gauss–Newton trust region), `fit_bergomi_interior_poin
 `graded_times` and `with_dates` build the time grid, refined near $t = 0$ and containing the
 maturities. `simulate` draws the variance factor and the spot's Brownian increments by randomized
 Sobol points with a Brownian bridge and antithetic paths, seeded by a dictionary that names the
-stream, and returns `Paths`. `log_spot` runs the Euler scheme of $X$ for a leverage factor
+stream, and returns `Paths`; with `segments`, the points restart with an independent scramble at
+the given times and the segments' paths are paired at random, which keeps leading Sobol
+coordinates for every part of a long grid. `log_spot` runs the Euler scheme of $X$ for a leverage factor
 (`euler_step` is one step).
 
 ## Leverage factors (`locsvol.leverage`)
