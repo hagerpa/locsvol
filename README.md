@@ -61,7 +61,9 @@ within 12 basis points of implied volatility.
 | Pricing | Black formula, implied volatility, Monte Carlo prices |
 
 [docs/method.md](docs/method.md) explains the method step by step, with the functions that
-implement each step, and [docs/models.md](docs/models.md) describes every model.
+implement each step, and [docs/models.md](docs/models.md) describes every model. Each module's
+folder under `src/locsvol/` has a `README.md` that explains its construction in the terms of the
+paper.
 
 ## The study of the paper
 
