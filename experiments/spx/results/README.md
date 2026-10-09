@@ -4,11 +4,20 @@ Each folder `<pair>/<backbone>/` holds the results of one run of `../run.py`: th
 
 | Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, particle method | Liquid inside after correction | Liquid inside, particle method |
 |---|---|---|---|---|---|
-| [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 6.0 / 5.1 / 4.4 | 45.1 / 26.0 / 26.8 | 93% | 50% |
+| [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 7.0 / 4.0 / 5.3 | 31.1 / 23.4 / 12.2 | 98% | 67% |
+| [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 9.5 / 5.6 / 6.5 | 26.0 / 13.4 / 19.8 | 70% | 30% |
+| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.7 / 8.3 / 14.4 | 38.3 / 20.0 / 20.2 | 74% | 30% |
+| [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 5.1 / 5.2 / 4.3 | 44.7 / 26.0 / 26.8 | 93% | 50% |
+| [`fomc`](fomc/heston) (2024-11-20 → 2024-12-18) | [Heston](fomc/heston) | 6.5 / 5.5 / 5.7 | 71.3 / 40.0 / 21.4 | 91% | 40% |
+| [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.2 / 3.8 / 4.8 | 31.8 / 17.5 / 32.6 | 98% | 83% |
+| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.7 / 14.3 | 50.1 / 25.0 / 25.3 | 99% | 75% |
 
 The RMSE columns give the root mean squared difference between model and target implied volatilities over the left wing, the central region and the right wing, in volatility basis points. The last two columns give the share of liquid quotes inside their bid-ask interval after four correction steps started after 5 iterations, and for the particle method.
 
+- `carry-unwind`: unwind of the yen carry trade; VIX intraday above 60, SPX about -3%
+- `election`: day after the US presidential election; event premium released, SPX about +2.5%
 - `fomc`: interest rate decision of the Federal Open Market Committee; SPX about -3%, VIX from 15 to 28
+- `tariffs`: second day after the tariff announcement of 2 April 2025; SPX about -6%, VIX 45; the earlier day is six weeks before, since March 2025 was itself agitated
 
 ## Files
 
