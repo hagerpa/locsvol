@@ -1,4 +1,4 @@
-# locsvol
+# locSvol
 
 Calibration of local stochastic volatility models by fixed-point iteration, as proposed in
 
