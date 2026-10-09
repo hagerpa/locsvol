@@ -67,6 +67,24 @@ segments of about a year every part of the grid keeps leading coordinates. The s
 horizon of 1.1 years uses one point set; the parametric study with maturities up to three years
 cuts at one and two years.
 
+## Calibration paths and pricing paths
+
+The paths of the calibration and the paths on which the calibrated models are priced are kept
+apart, by their streams and by their construction. The fixed-point iteration, the particle
+method, the fit of the backbone and the correction steps run on scrambled Sobol points with the
+bridge and antithetic pairs under their own streams. Prices of a calibrated model are never
+taken from these paths, since an estimate on the paths that determined the leverage factor is
+an in-sample estimate. Instead, every model is priced on sets of paths under evaluation streams
+that are independent of the calibration streams, in two ways. The first uses the same
+construction as the calibration, independently scrambled Sobol points with the bridge and
+antithetic pairs, one scramble per set; every scramble is an unbiased point set, and the spread
+across the sets gives the standard errors, which is how the study evaluates every model and
+draws its error bars. The second uses independent pseudo-random normals and chronological
+increments without pairs, so that the sample carries no quasi-Monte Carlo structure at all and
+the standard errors are those of plain Monte Carlo; the study prices the models of the paper's
+tables this way, on many more paths, since independent paths need about sixteen times as many
+as Sobol points for the same noise in the wings of the smile.
+
 ## Variance factor and spot (`paths.py`, `euler.py`)
 
 `simulate` draws the increments for a backbone and lets it turn them into the paths of its
