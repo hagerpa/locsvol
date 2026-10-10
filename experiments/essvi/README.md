@@ -6,8 +6,8 @@ literature: the extended SSVI (eSSVI) surface of Farkas, Ferrari and Ulrych (202
 Knothe-Rosenblatt calibration of Beiglboeck, Hasenbichler and Pammer (2026), with their reference
 Heston and one-factor Bergomi models as backbones. The surface is smooth in time and its Dupire
 local volatility is analytic, so the study shows the fixed-point iteration and the particle method
-on a target without the seams of a market surface. Results for both backbones are in
-[results](results/README.md).
+on a target without the seams of a market surface. The results for both backbones are in the
+folders `<backbone>/` and summarized in [Results](#results) below.
 
 The study follows the SPX study of the paper ([experiments/spx](../spx)) step by step, with the
 same settings (`../spx/settings.py`) wherever they apply; `parameters.py` holds the numbers that
@@ -65,6 +65,21 @@ region and the right wing, and here also over the central region of each maturit
 squared differences in volatility basis points with jackknife standard errors over the sets of
 paths, and the part of each RMSE that Monte Carlo noise alone accounts for.
 
+## Results
+
+Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central
+region and right wing RMSE against the eSSVI surface, in volatility basis points, on
+320 sets of 65,536 independent paths:
+
+| Backbone | RMSE, (10,12) 5 iterations | RMSE, particle method |
+|---|---|---|
+| [Bergomi](bergomi) | 6.3 / 3.7 / 4.9 | 10.4 / 5.7 / 13.4 |
+| [Heston](heston) | 3.3 / 7.9 / 11.2 | 8.7 / 4.6 / 14.8 |
+
+Each folder opens with its report, `README.md`: the tables of the regional and the
+per-maturity errors on the independent and on the Sobol paths and the smile figure; beside
+it `summary.json` with every model's errors and standard errors and `figures/`.
+
 ## Running the study
 
 ```sh
@@ -73,5 +88,5 @@ python experiments/essvi/publish.py --backbone heston --output <folder>
 ```
 
 `calibrate.py` keeps the results of its expensive steps in the output folder and reuses them when
-it is run again. `publish.py` writes `results/<backbone>/`: `README.md` with the tables and the
-smile figure, `summary.json` and `figures/`.
+it is run again. `publish.py` writes `<backbone>/`: `README.md` with the tables and the smile
+figure, `summary.json` and `figures/`; it also rebuilds the [Results](#results) section above.

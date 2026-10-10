@@ -1,14 +1,16 @@
-"""The results of a run: results/<backbone>/.
+"""The results of a run: <backbone>/ beside this script.
 
     python experiments/essvi/publish.py --backbone heston --output <folder>
 
 summary.json holds, for every model, the RMSE against the eSSVI per region and the central RMSE
 per maturity with standard errors, from the 20 sets of Sobol paths and from the 320 sets of
-independent paths; README.md the tables and the smile figure; figures/ the figure.
+independent paths; README.md the tables and the smile figure; figures/ the figure. The Results
+section of README.md in this folder is rebuilt from every published run.
 """
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -28,7 +30,7 @@ from run import label  # noqa: E402, the SPX study's run.py
 import locsvol as lsv  # noqa: E402
 from locsvol.pricing import implied_volatility  # noqa: E402
 
-RESULTS = Path(__file__).with_name("results")
+RESULTS = Path(__file__).parent  # the runs are published beside this script
 REGIONS = ("left", "central", "right")
 
 
@@ -188,14 +190,18 @@ def publish(backbone, output):
         "",
     ]
     (folder / "README.md").write_text("\n".join(lines))
-    overview(RESULTS)
+    update_readme(RESULTS)
 
 
-def overview(results):
-    """results/README.md from every published backbone."""
+def results_section(results):
+    """The Results section of README.md, from the summaries of the published runs."""
     chosen = label(s.DEGREES[0], s.PAPER_TABLE_ITERATIONS)
     lines = [
-        "# Results of the parametric study",
+        "## Results",
+        "",
+        f"Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central",
+        "region and right wing RMSE against the eSSVI surface, in volatility basis points, on",
+        f"{s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths:",
         "",
         f"| Backbone | RMSE, {chosen} | RMSE, particle method |",
         "|---|---|---|",
@@ -211,12 +217,22 @@ def overview(results):
         lines.append(f"| [{name.capitalize()}]({name}) | {rmse(rows[chosen])} | {rmse(rows['particle method'])} |")
     lines += [
         "",
-        "Left wing, central region and right wing, in volatility basis points, against the eSSVI",
-        f"surface on {s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths; each folder",
-        "holds the report of its run.",
+        "Each folder opens with its report, `README.md`: the tables of the regional and the",
+        "per-maturity errors on the independent and on the Sobol paths and the smile figure; beside",
+        "it `summary.json` with every model's errors and standard errors and `figures/`.",
         "",
     ]
-    (results / "README.md").write_text("\n".join(lines))
+    return "\n".join(lines) + "\n"
+
+
+def update_readme(results):
+    """Rewrite the Results section of README.md, up to the next section."""
+    path = results / "README.md"
+    text = path.read_text()
+    match = re.search(r"^## Results\n.*?(?=^## )", text, flags=re.S | re.M)
+    if match is None:
+        raise ValueError("README.md has no Results section")
+    path.write_text(text[: match.start()] + results_section(results) + text[match.end() :])
 
 
 def main():
