@@ -352,15 +352,20 @@ def tables_markdown(tables):
 
 def overview(summaries):
     """The README table over all published runs, ordered by the event day."""
+    n = s.PAPER_TABLE_ITERATIONS
+    degrees = [f"({d[0]},{d[1]})" for d in s.DEGREES]
     lines = [
-        "| Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, particle method "
-        "| Liquid inside after correction | Liquid inside, particle method |",
-        "|---|---|---|---|---|---|",
+        "| Date pair | Backbone | "
+        + " | ".join(f"RMSE, {d} after {n} iterations" for d in degrees)
+        + " | RMSE, particle method | "
+        + " | ".join(f"Liquid inside, {d} corrected" for d in degrees)
+        + " | Liquid inside, particle method |",
+        "|---|---|" + "---|" * (2 * len(degrees) + 2),
     ]
     for record in sorted(summaries, key=lambda r: (r["date_pair"]["event_day"], r["backbone"])):
         rows = {row["label"]: row for row in record["models"]}
-        fixed = rows["(10,12) 5 iterations"]
-        last = corrected(rows, (10, 12), s.PAPER_TABLE_ITERATIONS)
+        fixed = [rows[label(d, n)] for d in s.DEGREES]
+        last = [rows[corrected(rows, d, n)] for d in s.DEGREES]
         particle = rows["particle method"]
 
         def rmse(row):
@@ -373,8 +378,11 @@ def overview(summaries):
         folder = f"{pair['label']}/{record['backbone']}"
         lines.append(
             f"| [`{pair['label']}`]({folder}) ({pair['earlier_day']} → {pair['event_day']}) "
-            f"| [{record['backbone'].capitalize()}]({folder}) | {rmse(fixed)} | {rmse(particle)} "
-            f"| {inside(rows[last])} | {inside(particle)} |"
+            f"| [{record['backbone'].capitalize()}]({folder}) | "
+            + " | ".join(rmse(row) for row in fixed)
+            + f" | {rmse(particle)} | "
+            + " | ".join(inside(row) for row in last)
+            + f" | {inside(particle)} |"
         )
     return lines
 
@@ -394,9 +402,9 @@ def results_section(summaries):
         "",
         "The RMSE columns give the root mean squared difference between model and target implied "
         "volatilities over the left wing, the central region and the right wing, in volatility "
-        "basis points. The last two columns give the share of liquid quotes inside their bid-ask "
-        "interval after four correction steps started after 5 iterations, and for the particle "
-        "method.",
+        "basis points, for both bases after 5 iterations and for the particle method. The inside "
+        "columns give the share of liquid quotes inside their bid-ask interval for both bases "
+        "after four correction steps started after 5 iterations, and for the particle method.",
         "",
         *(f"- `{label}`: {event}" for label, event in sorted(events.items())),
         "",
