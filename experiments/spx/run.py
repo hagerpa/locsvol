@@ -13,7 +13,7 @@
    and figures on 320 sets of 65,536 independent paths (Section 3.4).
 
 Every step keeps its result in the output folder and reuses it when the script runs again.
-results.py turns the prices into the results of results/<pair>/<backbone>/.
+results.py turns the prices into the results of <pair>/<backbone>/ beside the scripts.
 """
 
 import argparse

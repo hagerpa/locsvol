@@ -1,4 +1,4 @@
-"""The results of a run: results/<pair>/<backbone>/.
+"""The results of a run: <pair>/<backbone>/ beside this script.
 
     python experiments/spx/results.py --pair fomc --backbone bergomi --output <folder>
 
@@ -7,7 +7,8 @@ and the shares of liquid quotes inside their intervals, with standard errors, fr
 Sobol paths; parameters.json the fitted backbone, the target, the coordinates and the coefficients
 of every parametrized leverage factor. paper/ holds the paper's tables (tables.md, tables.json) and
 figures (PDF and PNG) from the 320 sets of independent paths, and README.md the report of the run
-with the figures of figures/ (report.py). results/README.md is rebuilt from every published run.
+with the figures of figures/ (report.py). The Results section of README.md in this folder is
+rebuilt from every published run.
 """
 
 import argparse
@@ -33,7 +34,7 @@ from locsvol.calibration.gauss_newton import interval_residuals
 from locsvol.leverage import Parametrized
 from locsvol.pricing import black_price, implied_volatility
 
-RESULTS = Path(__file__).with_name("results")
+RESULTS = Path(__file__).parent  # the runs are published beside this script
 REGIONS = ("left", "central", "right")
 LOSSES = ("all_quotes", "liquid_quotes")
 POSITIONS = ("inside", "within_noise", "clearly_outside")
@@ -378,14 +379,15 @@ def overview(summaries):
     return lines
 
 
-def readme(summaries):
+def results_section(summaries):
+    """The Results section of README.md, from the summaries of the published runs."""
     events = {r["date_pair"]["label"]: r["date_pair"]["event"] for r in summaries}
     lines = [
-        "# Results of the SPX study",
+        "## Results",
         "",
-        "Each folder `<pair>/<backbone>/` holds the results of one run of `../run.py`: the "
-        "backbone (Bergomi or Heston) is fitted to the S&P 500 index options of the earlier day "
-        "and the leverage factor to those of the event day. Every run is evaluated on "
+        "Each folder `<pair>/<backbone>/` holds the results of one run of `run.py`: the backbone "
+        "(Bergomi or Heston) is fitted to the S&P 500 index options of the earlier day and the "
+        "leverage factor to those of the event day. Every run is evaluated on "
         f"{s.EVALUATION_REPLICATIONS} sets of {s.EVALUATION_PATHS:,} scrambled Sobol paths.",
         "",
         *overview(summaries),
@@ -397,8 +399,6 @@ def readme(summaries):
         "method.",
         "",
         *(f"- `{label}`: {event}" for label, event in sorted(events.items())),
-        "",
-        "## Files",
         "",
         "Each folder opens with its report, `README.md`: the paper's tables and figures for that "
         "date pair and backbone, every model's errors and bid-ask losses, the fixed-point "
@@ -417,10 +417,18 @@ def readme(summaries):
         "commit and the SHA-256 of both data files.",
         "- `figures/`: the figures of the report.",
         "",
-        "The quotes are OptionMetrics data from Wharton Research Data Services (WRDS) and are not "
-        "part of the repository; see `../README.md` for obtaining them and running the study.",
     ]
     return "\n".join(lines) + "\n"
+
+
+def update_readme(summaries):
+    """Rewrite the Results section of README.md, up to the next section."""
+    path = RESULTS / "README.md"
+    text = path.read_text()
+    match = re.search(r"^## Results\n.*?(?=^## )", text, flags=re.S | re.M)
+    if match is None:
+        raise ValueError("README.md has no Results section")
+    path.write_text(text[: match.start()] + results_section(summaries) + text[match.end() :])
 
 
 def write_json(path, value):
@@ -479,7 +487,7 @@ def publish(pair, backbone, data, output):
         tables_markdown(tables),
     )
     summaries = [json.loads(path.read_text()) for path in sorted(RESULTS.glob("*/*/summary.json"))]
-    (RESULTS / "README.md").write_text(readme(summaries))
+    update_readme(summaries)
 
 
 def main():

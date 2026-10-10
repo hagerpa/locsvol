@@ -1,4 +1,4 @@
-"""The report of a run: results/<pair>/<backbone>/README.md and the figures in figures/.
+"""The report of a run: <pair>/<backbone>/README.md and the figures in figures/.
 
 The report starts with the paper's tables and figures for the run, from the 320 sets of
 independent paths, and continues with every model on the 20 sets of Sobol paths: the errors and
