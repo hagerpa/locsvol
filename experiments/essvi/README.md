@@ -69,12 +69,13 @@ paths, and the part of each RMSE that Monte Carlo noise alone accounts for.
 
 Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central
 region and right wing RMSE against the eSSVI surface, in volatility basis points, on
-320 sets of 65,536 independent paths:
+320 sets of 65,536 independent paths, after 12 fixed-point iterations; after 5, the maturities of two and three
+years are still converging, and the reports have those numbers as well:
 
-| Backbone | RMSE, (10,12) 5 iterations | RMSE, particle method |
-|---|---|---|
-| [Bergomi](bergomi) | 6.3 / 3.7 / 4.9 | 10.4 / 5.7 / 13.4 |
-| [Heston](heston) | 3.3 / 7.9 / 11.2 | 8.7 / 4.6 / 14.8 |
+| Backbone | RMSE, (10,12) 12 iterations | RMSE, (6,8) 12 iterations | RMSE, particle method |
+|---|---|---|---|
+| [Bergomi](bergomi) | 3.4 / 2.2 / 3.7 | 4.9 / 3.9 / 7.0 | 10.4 / 5.7 / 13.4 |
+| [Heston](heston) | 2.9 / 2.9 / 12.2 | 3.3 / 5.2 / 15.0 | 8.7 / 4.6 / 14.8 |
 
 Each folder opens with its report, `README.md`: the tables of the regional and the
 per-maturity errors on the independent and on the Sobol paths and the smile figure; beside

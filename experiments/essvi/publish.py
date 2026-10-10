@@ -195,16 +195,18 @@ def publish(backbone, output):
 
 def results_section(results):
     """The Results section of README.md, from the summaries of the published runs."""
-    chosen = label(s.DEGREES[0], s.PAPER_TABLE_ITERATIONS)
+    shown = [label(d, s.ITERATIONS) for d in s.DEGREES] + ["particle method"]
     lines = [
         "## Results",
         "",
-        f"Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central",
+        "Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central",
         "region and right wing RMSE against the eSSVI surface, in volatility basis points, on",
-        f"{s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths:",
+        f"{s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths, after {s.ITERATIONS} "
+        f"fixed-point iterations; after {s.PAPER_TABLE_ITERATIONS}, the maturities of two and three",
+        "years are still converging, and the reports have those numbers as well:",
         "",
-        f"| Backbone | RMSE, {chosen} | RMSE, particle method |",
-        "|---|---|---|",
+        "| Backbone | " + " | ".join(f"RMSE, {name}" for name in shown) + " |",
+        "|---|" + "---|" * len(shown),
     ]
     for path in sorted(results.glob("*/summary.json")):
         record = json.loads(path.read_text())
@@ -214,7 +216,7 @@ def results_section(results):
             return " / ".join(cell(v) for v in row["estimate"][:3])
 
         name = record["backbone"]
-        lines.append(f"| [{name.capitalize()}]({name}) | {rmse(rows[chosen])} | {rmse(rows['particle method'])} |")
+        lines.append(f"| [{name.capitalize()}]({name}) | " + " | ".join(rmse(rows[m]) for m in shown) + " |")
     lines += [
         "",
         "Each folder opens with its report, `README.md`: the tables of the regional and the",
