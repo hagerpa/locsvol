@@ -4,13 +4,14 @@ Each folder `<pair>/<backbone>/` holds the results of one run of `../run.py`: th
 
 | Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, particle method | Liquid inside after correction | Liquid inside, particle method |
 |---|---|---|---|---|---|
-| [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 7.0 / 4.0 / 5.3 | 31.1 / 23.4 / 12.2 | 98% | 67% |
-| [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 9.5 / 5.6 / 6.5 | 26.0 / 13.4 / 19.8 | 70% | 30% |
-| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.7 / 8.3 / 14.4 | 38.3 / 20.0 / 20.2 | 74% | 30% |
+| [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 6.4 / 4.1 / 5.5 | 31.1 / 23.4 / 12.2 | 98% | 67% |
+| [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 55.6 / 34.6 / 21.4 | 95% | 55% |
+| [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 7.7 / 5.7 / 7.1 | 25.9 / 13.4 / 19.8 | 68% | 30% |
+| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.0 / 8.1 / 13.2 | 38.2 / 20.0 / 19.8 | 73% | 30% |
 | [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 5.1 / 5.2 / 4.3 | 44.7 / 26.0 / 26.8 | 93% | 50% |
 | [`fomc`](fomc/heston) (2024-11-20 → 2024-12-18) | [Heston](fomc/heston) | 6.5 / 5.5 / 5.7 | 71.3 / 40.0 / 21.4 | 91% | 40% |
-| [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.2 / 3.8 / 4.8 | 31.8 / 17.5 / 32.6 | 98% | 83% |
-| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.7 / 14.3 | 50.1 / 25.0 / 25.3 | 99% | 75% |
+| [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.4 / 3.8 / 4.3 | 31.8 / 17.5 / 32.6 | 99% | 83% |
+| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.8 / 13.9 | 50.1 / 25.0 / 25.3 | 99% | 75% |
 
 The RMSE columns give the root mean squared difference between model and target implied volatilities over the left wing, the central region and the right wing, in volatility basis points. The last two columns give the share of liquid quotes inside their bid-ask interval after four correction steps started after 5 iterations, and for the particle method.
 

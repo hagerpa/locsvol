@@ -1,0 +1,192 @@
+{
+  "evaluation": {
+    "replications": 320,
+    "paths_per_replication": 65536,
+    "paths": "independent pseudo-random paths"
+  },
+  "table_1": [
+    {
+      "label": "Joint regression (10,12), 5 iterations",
+      "rmse_bp": {
+        "left": 4.183802376163509,
+        "central": 3.251068611303177,
+        "right": 5.787533121814145
+      },
+      "two_standard_errors_bp": {
+        "left": 2.120649844137136,
+        "central": 1.2845562293189803,
+        "right": 0.6387216794205129
+      },
+      "noise_floor_bp": {
+        "left": 3.032991456238588,
+        "central": 0.9708810550212966,
+        "right": 0.5603720381677735
+      }
+    },
+    {
+      "label": "Joint regression (6,8), 5 iterations",
+      "rmse_bp": {
+        "left": 5.228574650354364,
+        "central": 2.9218415090562524,
+        "right": 6.362328500596039
+      },
+      "two_standard_errors_bp": {
+        "left": 2.4381796529274653,
+        "central": 0.9055230223155961,
+        "right": 0.6039116037289571
+      },
+      "noise_floor_bp": {
+        "left": 3.0321359310831046,
+        "central": 0.9706646487131825,
+        "right": 0.5513630512545059
+      }
+    },
+    {
+      "label": "Particle method",
+      "rmse_bp": {
+        "left": 31.181012422142352,
+        "central": 17.058915838216464,
+        "right": 31.590610863867987
+      },
+      "two_standard_errors_bp": {
+        "left": 4.6382499012708935,
+        "central": 1.184093649032161,
+        "right": 0.5844597129089958
+      },
+      "noise_floor_bp": {
+        "left": 2.9959217207741196,
+        "central": 0.9639577640375897,
+        "right": 0.5585350691364257
+      }
+    }
+  ],
+  "table_2": [
+    {
+      "degrees": "(10,12)",
+      "label": "0 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 394.1488088343763,
+        "liquid_quotes": 356.3542874532917
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 1.0064448451823471,
+        "liquid_quotes": 0.5603000082024303
+      },
+      "liquid_inside_percent": 5.425400739827374
+    },
+    {
+      "degrees": "(10,12)",
+      "label": "3 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 7.555527175090648,
+        "liquid_quotes": 0.38010832011052836
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.8324583394340339,
+        "liquid_quotes": 0.19992451896020347
+      },
+      "liquid_inside_percent": 99.07521578298397
+    },
+    {
+      "degrees": "(10,12)",
+      "label": "5 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 5.012355097045186,
+        "liquid_quotes": 0.3141592380037543
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.571873362768257,
+        "liquid_quotes": 0.2061060975419053
+      },
+      "liquid_inside_percent": 98.82860665844636
+    },
+    {
+      "degrees": "(10,12)",
+      "label": "8 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 5.0221292611298844,
+        "liquid_quotes": 0.34340857533914054
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.5832884260396457,
+        "liquid_quotes": 0.21386618684841222
+      },
+      "liquid_inside_percent": 98.76695437731196
+    },
+    {
+      "degrees": "(6,8)",
+      "label": "0 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 383.30358577501903,
+        "liquid_quotes": 346.71288264486117
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 1.0047782067891562,
+        "liquid_quotes": 0.5584126553369277
+      },
+      "liquid_inside_percent": 6.041923551171394
+    },
+    {
+      "degrees": "(6,8)",
+      "label": "3 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 7.36737090717394,
+        "liquid_quotes": 0.3856394495248371
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.8227607599629255,
+        "liquid_quotes": 0.19763944892008362
+      },
+      "liquid_inside_percent": 99.01356350184956
+    },
+    {
+      "degrees": "(6,8)",
+      "label": "5 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 4.798741505277196,
+        "liquid_quotes": 0.3939668227608101
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.5151960280650577,
+        "liquid_quotes": 0.20499606480518537
+      },
+      "liquid_inside_percent": 98.64364981504316
+    },
+    {
+      "degrees": "(6,8)",
+      "label": "8 iterations",
+      "bid_ask_loss_bp": {
+        "all_quotes": 4.811811710561385,
+        "liquid_quotes": 0.3943180736780796
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.5288589444078999,
+        "liquid_quotes": 0.20710237304946605
+      },
+      "liquid_inside_percent": 98.76695437731196
+    },
+    {
+      "degrees": null,
+      "label": "Particle method",
+      "bid_ask_loss_bp": {
+        "all_quotes": 10.170273533728546,
+        "liquid_quotes": 6.195697990430061
+      },
+      "two_standard_errors_bp": {
+        "all_quotes": 0.5312024039101505,
+        "liquid_quotes": 0.9482020518819333
+      },
+      "liquid_inside_percent": 83.84710234278668
+    },
+    {
+      "degrees": null,
+      "label": "Refined SVI target",
+      "bid_ask_loss_bp": {
+        "all_quotes": 6.368641017255505,
+        "liquid_quotes": 1.1315880150259485
+      },
+      "two_standard_errors_bp": null,
+      "liquid_inside_percent": 98.08877928483354
+    }
+  ]
+}
