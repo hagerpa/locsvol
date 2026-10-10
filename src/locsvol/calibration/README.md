@@ -78,6 +78,8 @@ The Bergomi parameters $(\nu, \vartheta, \rho_1, \rho_2)$ are fitted to the mid 
 earlier day in the pure stochastic volatility model, with the leverage factor $\sqrt{\xi(t)}$ of
 that day's forward variance, by regularized Gauss–Newton steps in a trust region on Monte Carlo
 prices over fixed Brownian increments; the price derivatives come from forward-mode
-differentiation of the simulation, and the steps keep the correlation matrix of the three
-Brownian motions positive definite. The Heston parameters are fitted to the same prices by
+differentiation of the simulation, the steps keep the correlation matrix of the three
+Brownian motions positive definite, and a step whose solver reaches the minimizer without
+certifying its tolerance is taken at a hundred times that tolerance, which stops at the same
+point. The Heston parameters are fitted to the same prices by
 least squares on Fourier prices of the package `roughprix`.

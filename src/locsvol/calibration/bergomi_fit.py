@@ -13,6 +13,11 @@ and keeps the correlation matrix of (W, Z^1, Z^2) positive definite with a margi
 principal minors 1 - rho_1^2, 1 - rho_2^2, 1 - rho_Z^2 and its determinant
 1 + 2 rho_1 rho_2 rho_Z - rho_1^2 - rho_2^2 - rho_Z^2 are at least epsilon.
 
+The local problem of a step is solved by SLSQP at the tolerance of the solver settings; when
+SLSQP reaches the minimizer but cannot certify that tolerance (its line search finds no further
+decrease), the step is taken at a tolerance a hundred times looser, which stops at the same
+point.
+
 Alternatively, the loss itself is minimized under the bounds and the correlation constraints by
 the interior point method with trust regions of Byrd, Hribar and Nocedal (SIAM J. Optim. 9, 1999)
 and quasi-Newton (BFGS) Hessians, with the gradient 2 J^T diag(w / v^2) r of the loss from the
@@ -254,17 +259,31 @@ def fit_bergomi(
         constraints = Constraints(
             template, s, low, high, margin, x, loss.transform, radius, cumulative_radius, names
         )
-        x = x + slsqp(
-            loss,
-            lambda z, c=constraints: margins(z, c),
-            lambda z, c=constraints: margin_jacobian(z, c),
-            solver,
-        )
+        x = x + _certified_step(loss, constraints, solver)
         backbone = displaced(template, x, s, names)
         if not _admissible(backbone, names, *bounds, margin):
             raise ConvergenceError("the step leaves the bounds or the correlation margin")
         fitted.append(backbone)
     return fitted
+
+
+def _certified_step(loss, constraints, solver, loosening=100.0):
+    """The step of the local problem; when SLSQP cannot certify its tolerance, the step at the
+    tolerance loosened by the factor loosening, which accepts the same point."""
+    try:
+        return slsqp(
+            loss,
+            lambda z, c=constraints: margins(z, c),
+            lambda z, c=constraints: margin_jacobian(z, c),
+            solver,
+        )
+    except ConvergenceError:
+        return slsqp(
+            loss,
+            lambda z, c=constraints: margins(z, c),
+            lambda z, c=constraints: margin_jacobian(z, c),
+            replace(solver, tolerance=solver.tolerance * loosening),
+        )
 
 
 _loss_gradient = jax.jit(jax.grad(linearized_loss))
