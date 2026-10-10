@@ -27,7 +27,7 @@ from date_pairs import PAIRS
 from evaluation import Comparison, jackknife
 from figures import draw
 from report import draw_report_figures, write_report
-from run import calibrate, corrected, day_quotes, paper_models, time_grid
+from run import calibrate, corrected, day_quotes, label, paper_models, time_grid
 
 import locsvol as lsv
 from locsvol.calibration.gauss_newton import interval_residuals

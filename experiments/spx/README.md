@@ -105,18 +105,18 @@ jackknife over the sets of paths.
 
 Each folder `<pair>/<backbone>/` holds the results of one run of `run.py`: the backbone (Bergomi or Heston) is fitted to the S&P 500 index options of the earlier day and the leverage factor to those of the event day. Every run is evaluated on 20 sets of 65,536 scrambled Sobol paths.
 
-| Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, particle method | Liquid inside after correction | Liquid inside, particle method |
-|---|---|---|---|---|---|
-| [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 6.4 / 4.1 / 5.5 | 31.1 / 23.4 / 12.2 | 98% | 67% |
-| [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 55.6 / 34.6 / 21.4 | 95% | 55% |
-| [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 7.7 / 5.7 / 7.1 | 25.9 / 13.4 / 19.8 | 68% | 30% |
-| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.0 / 8.1 / 13.2 | 38.2 / 20.0 / 19.8 | 73% | 30% |
-| [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 5.1 / 5.2 / 4.3 | 44.7 / 26.0 / 26.8 | 93% | 50% |
-| [`fomc`](fomc/heston) (2024-11-20 → 2024-12-18) | [Heston](fomc/heston) | 6.5 / 5.5 / 5.7 | 71.3 / 40.0 / 21.4 | 91% | 40% |
-| [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.4 / 3.8 / 4.3 | 31.8 / 17.5 / 32.6 | 99% | 83% |
-| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.8 / 13.9 | 50.1 / 25.0 / 25.3 | 99% | 75% |
+| Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, (6,8) after 5 iterations | RMSE, particle method | Liquid inside, (10,12) corrected | Liquid inside, (6,8) corrected | Liquid inside, particle method |
+|---|---|---|---|---|---|---|---|
+| [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 6.4 / 4.1 / 5.5 | 6.8 / 3.6 / 4.7 | 31.1 / 23.4 / 12.2 | 98% | 98% | 67% |
+| [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 7.4 / 7.1 / 6.4 | 55.6 / 34.6 / 21.4 | 95% | 95% | 55% |
+| [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 7.7 / 5.7 / 7.1 | 16.3 / 6.0 / 8.0 | 25.9 / 13.4 / 19.8 | 68% | 58% | 30% |
+| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.0 / 8.1 / 13.2 | 21.8 / 11.2 / 17.8 | 38.2 / 20.0 / 19.8 | 73% | 64% | 30% |
+| [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 5.1 / 5.2 / 4.3 | 17.9 / 5.7 / 6.5 | 44.7 / 26.0 / 26.8 | 93% | 87% | 50% |
+| [`fomc`](fomc/heston) (2024-11-20 → 2024-12-18) | [Heston](fomc/heston) | 6.5 / 5.5 / 5.7 | 15.1 / 7.5 / 6.8 | 71.3 / 40.0 / 21.4 | 91% | 84% | 40% |
+| [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.4 / 3.8 / 4.3 | 4.5 / 3.2 / 5.0 | 31.8 / 17.5 / 32.6 | 99% | 98% | 83% |
+| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.8 / 13.9 | 4.6 / 6.5 / 16.6 | 50.1 / 25.0 / 25.3 | 99% | 99% | 75% |
 
-The RMSE columns give the root mean squared difference between model and target implied volatilities over the left wing, the central region and the right wing, in volatility basis points. The last two columns give the share of liquid quotes inside their bid-ask interval after four correction steps started after 5 iterations, and for the particle method.
+The RMSE columns give the root mean squared difference between model and target implied volatilities over the left wing, the central region and the right wing, in volatility basis points, for both bases after 5 iterations and for the particle method. The inside columns give the share of liquid quotes inside their bid-ask interval for both bases after four correction steps started after 5 iterations, and for the particle method.
 
 - `carry-unwind`: unwind of the yen carry trade; VIX intraday above 60, SPX about -3%
 - `election`: day after the US presidential election; event premium released, SPX about +2.5%
