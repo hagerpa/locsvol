@@ -107,6 +107,8 @@ Each folder `<pair>/<backbone>/` holds the results of one run of `run.py`: the b
 
 | Date pair | Backbone | RMSE, (10,12) after 5 iterations | RMSE, (6,8) after 5 iterations | RMSE, particle method | Liquid inside, (10,12) corrected | Liquid inside, (6,8) corrected | Liquid inside, particle method |
 |---|---|---|---|---|---|---|---|
+| [`svb`](svb/bergomi) (2023-02-13 → 2023-03-13) | [Bergomi](svb/bergomi) | 4.1 / 2.6 / 8.0 | 6.7 / 3.0 / 11.0 | 21.2 / 9.6 / 16.2 | 42% | 45% | 16% |
+| [`svb`](svb/heston) (2023-02-13 → 2023-03-13) | [Heston](svb/heston) | 4.5 / 2.4 / 5.0 | 5.6 / 3.0 / 14.4 | 17.9 / 9.5 / 17.1 | 47% | 45% | 18% |
 | [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 6.4 / 4.1 / 5.5 | 6.8 / 3.6 / 4.7 | 31.1 / 23.4 / 12.2 | 98% | 98% | 67% |
 | [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 7.4 / 7.1 / 6.4 | 55.6 / 34.6 / 21.4 | 95% | 95% | 55% |
 | [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 7.7 / 5.7 / 7.1 | 16.3 / 6.0 / 8.0 | 25.9 / 13.4 / 19.8 | 68% | 58% | 30% |
@@ -121,6 +123,7 @@ The RMSE columns give the root mean squared difference between model and target 
 - `carry-unwind`: unwind of the yen carry trade; VIX intraday above 60, SPX about -3%
 - `election`: day after the US presidential election; event premium released, SPX about +2.5%
 - `fomc`: interest rate decision of the Federal Open Market Committee; SPX about -3%, VIX from 15 to 28
+- `svb`: failure of Silicon Valley Bank; front-end rates collapse, VIX 26
 - `tariffs`: second day after the tariff announcement of 2 April 2025; SPX about -6%, VIX 45; the earlier day is six weeks before, since March 2025 was itself agitated
 
 Each folder opens with its report, `README.md`: the paper's tables and figures for that date pair and backbone, every model's errors and bid-ask losses, the fixed-point iteration iterate by iterate, every correction chain, and the smiles and prices at every expiry. Besides it:
