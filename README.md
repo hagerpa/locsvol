@@ -27,16 +27,23 @@ smile made up from a known SSVI surface, so it runs without market data (about a
 laptop). Its core is
 
 ```python
+import jax.numpy as jnp
 from locsvol.backbones import Bergomi
 from locsvol.calibration import fixed_point
-from locsvol.leverage import Parametrized
+from locsvol.leverage import Chart, Clipped, Parametrized, quantile_bounds, quantile_envelope, tabulate
 from locsvol.regression import ChebyshevTensor, GammaRegression
 from locsvol.simulation import simulate
 from locsvol.targets import Dupire, fit_ssvi, fit_svi
 
-ssvi = fit_ssvi(maturities, log_strikes, quoted, weights)        # SSVI fit to the quotes
-surface = fit_svi(maturities, log_strikes, quoted, weights, ssvi) # refined slice by slice
-target = Dupire(surface)                                         # sigma_Dup(t, x)
+ssvi = fit_ssvi(maturities, log_strikes, quoted, weights)         # SSVI fit to the quotes
+surface = fit_svi(maturities, log_strikes, quoted, weights, ssvi)  # refined slice by slice
+
+times = jnp.linspace(0.0, 1.0, 401)                               # the Euler grid
+reference = ssvi.extended(1.0)                                    # theta continued to the horizon
+chart = Chart(reference.theta_times, reference.theta_values, reference.eta, reference.gamma, (0.0, 1.0))
+bounds = quantile_bounds(reference, times, 2e-4)                  # x_eps(t), x_{1-eps}(t)
+local_volatility = tabulate(Clipped(Dupire(surface), *bounds), chart, times)  # sigma_Dup(t, x)
+chart = chart.with_envelope(*quantile_envelope(chart, reference, times, 2e-4))
 
 backbone = Bergomi(nu=2.0, theta=0.2, rho1=-0.7, rho2=-0.3)
 paths = simulate(backbone, times, dict(seed=1, role="calibration"), 16384)
@@ -46,9 +53,10 @@ start = Parametrized(local_volatility, chart, basis, jnp.zeros(basis.size))  # L
 iterates = fixed_point(start, local_volatility, paths, GammaRegression(basis, ridge=1e-6), 5)
 ```
 
-where the time grid `times`, the chart and the tabulated target `local_volatility` are set up as
-in the script. The calibrated model reproduces the quotes
-within 12 basis points of implied volatility.
+for quotes given as arrays `maturities`, `log_strikes`, `quoted` and `weights` of equal length. The
+script uses a time grid graded towards zero and a finer table of the target, and prices the
+calibrated model on independent paths: it reproduces the quotes within 12 basis points of implied
+volatility.
 
 ## Contents
 
