@@ -32,12 +32,18 @@ COLORS = dict(
     corrected="#4E79A7",
     starts={0: "#8C8C8C", 3: "#A0CBE8", 5: "#4E79A7", 8: "#2B4C7E"},
 )
+# The figures are printed at 0.9 of the text width of the SIAM class (444.5 pt), so they are
+# drawn at that width and their text at about the size of the document's footnotes.
+WIDTH = 0.9 * 444.53 / 72.27
+
 RC = {
     "font.family": "serif",
     "font.serif": ["cmr10"],
     "mathtext.fontset": "cm",
     "axes.formatter.use_mathtext": True,
-    "font.size": 8,
+    "font.size": 9,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
     "figure.dpi": 150,
     "savefig.bbox": "tight",
     "axes.spines.top": False,
@@ -45,7 +51,7 @@ RC = {
     "axes.edgecolor": "#3C3C3C",
     "axes.linewidth": 0.6,
     "axes.labelcolor": "#222222",
-    "axes.titlesize": 8.5,
+    "axes.titlesize": 9,
     "axes.axisbelow": True,
     "xtick.color": "#3C3C3C",
     "ytick.color": "#3C3C3C",
@@ -53,7 +59,7 @@ RC = {
     "ytick.major.size": 2.5,
     "xtick.major.width": 0.6,
     "ytick.major.width": 0.6,
-    "legend.fontsize": 7,
+    "legend.fontsize": 8,
 }
 GRID = dict(axis="y", color="#E4E4E4", linewidth=0.5)
 KIND_STYLES = {
@@ -173,7 +179,7 @@ def draw(
     fig, axes = plt.subplots(
         2,
         3,
-        figsize=(7.0, 3.9),
+        figsize=(WIDTH, 3.4),
         layout="constrained",
         sharex="col",
         gridspec_kw=dict(height_ratios=(2.2, 1.0)),
@@ -206,11 +212,11 @@ def draw(
     fig.legend(handles=handles, loc="outside lower center", ncol=3, frameon=False)
     save(fig, "smiles")
 
-    fig, (left, right) = plt.subplots(1, 2, figsize=(7.0, 2.6), layout="constrained")
+    fig, (left, right) = plt.subplots(1, 2, figsize=(WIDTH, 2.3), layout="constrained")
     for degrees in DEGREES:
         rms = np.asarray(increments[tuple(degrees)])
         left.plot(np.arange(1, rms.size + 1), rms, label=tag(degrees), **style(kind_of(degrees)))
-    left.set(xlabel="fixed-point iteration", ylabel="RMS leverage increment", yscale="log")
+    left.set(xlabel="fixed-point iteration $i$", ylabel=r"$\Delta_i$", yscale="log")
     left.set_xticks(range(1, ITERATIONS + 1))
     left.legend(title="degrees", frameon=False, loc="upper right")
     middle = (len(CORRECTION_STARTS) - 1) / 2
@@ -259,7 +265,7 @@ def draw(
         ),
     ]
     phases = marker_phases(spread)
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.6), layout="constrained")
+    fig, axes = plt.subplots(1, 3, figsize=(WIDTH, 2.3), layout="constrained")
     for ax, (day, panel) in zip(axes, days, strict=True):
         rows = np.flatnonzero(quote_days == day)
         rows = rows[np.argsort(quote_k[rows])]
