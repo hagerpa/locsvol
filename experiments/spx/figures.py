@@ -2,8 +2,8 @@
 
 smiles: at the expiries nearest one week, one month and one year, the implied volatilities of the
 target, of the starting point L0, of the particle method and of the fixed point after five
-iterations for both bases, with the bid-ask band of the quotes; below, the differences to the
-target. convergence: the root mean square of the coefficient increment in every iteration, and the
+iterations for both bases; below, the differences to the target. convergence: the root mean
+square change of the leverage factor along the simulated paths in every iteration, and the
 bid-ask loss over all quotes along the correction steps of the (6,8) basis. spreads: the model
 prices minus the mid prices, divided by the vega, for the particle method, the (6,8) basis after
 twelve iterations and after five iterations and four correction steps, against the bid-ask band.
@@ -112,7 +112,8 @@ def draw(
 
     prices maps model names to pooled prices at the quotes and the comparison grid, statistics
     maps them to the estimates and standard errors of Comparison.statistics, and increments maps
-    the degrees to the root mean square coefficient increments of the iterations.
+    the degrees to the root mean square changes of the leverage factor along the simulated paths
+    in every iteration.
     """
     import matplotlib
 
@@ -127,7 +128,6 @@ def draw(
     grid_t, grid_k = (np.asarray(v) for v in comparison.grid)
     calls = np.ones(grid_k.size, dtype=bool)
     target = 100 * np.asarray(comparison.target)
-    mid_iv = 100 * np.asarray(quotes.implied_volatility)
     bid, ask = np.asarray(quotes.bid), np.asarray(quotes.ask)
     liquid = np.asarray(quotes.liquid)
     scale = 1e4 / np.asarray(quotes.vega)
@@ -181,22 +181,7 @@ def draw(
     for column, (day, panel) in enumerate(days):
         above, below = axes[0, column], axes[1, column]
         rows = np.flatnonzero(grid_days == day)
-        rows_q = np.flatnonzero(quote_days == day)
         k = grid_k[rows]
-        rows_q = rows_q[np.argsort(quote_k[rows_q])]
-        for ax, centre in (
-            (above, mid_iv),
-            (below, 100 * (mid_iv - np.interp(quote_k, k, target[rows]))),
-        ):
-            width = band / (1e2 if ax is above else 1.0)
-            ax.fill_between(
-                quote_k[rows_q],
-                (centre - width)[rows_q],
-                (centre + width)[rows_q],
-                color=COLORS["band"],
-                linewidth=0,
-                zorder=1,
-            )
         largest = []
         for name, _, kind in smile:
             values = iv(name)[rows]
@@ -217,7 +202,6 @@ def draw(
     axes[1, 0].set_ylabel("IV minus target (bp)")
     handles = [
         Line2D([], [], color=COLORS["target"], linewidth=1.1, label="refined SVI target"),
-        Patch(facecolor=COLORS["band"], linewidth=0, label="bid-ask band"),
     ] + [Line2D([], [], label=label, **style(kind)) for _, label, kind in smile]
     fig.legend(handles=handles, loc="outside lower center", ncol=3, frameon=False)
     save(fig, "smiles")
@@ -226,7 +210,7 @@ def draw(
     for degrees in DEGREES:
         rms = np.asarray(increments[tuple(degrees)])
         left.plot(np.arange(1, rms.size + 1), rms, label=tag(degrees), **style(kind_of(degrees)))
-    left.set(xlabel="fixed-point iteration", ylabel="RMS coefficient increment", yscale="log")
+    left.set(xlabel="fixed-point iteration", ylabel="RMS leverage increment", yscale="log")
     left.set_xticks(range(1, ITERATIONS + 1))
     left.legend(title="degrees", frameon=False, loc="upper right")
     middle = (len(CORRECTION_STARTS) - 1) / 2

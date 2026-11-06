@@ -33,6 +33,7 @@ import locsvol as lsv
 from locsvol.calibration.gauss_newton import interval_residuals
 from locsvol.leverage import Parametrized
 from locsvol.pricing import black_price, implied_volatility
+from locsvol.simulation import simulate, trapezoid_weights
 
 RESULTS = Path(__file__).parent  # the runs are published beside this script
 REGIONS = ("left", "central", "right")
@@ -194,16 +195,31 @@ def parameters(pair, model, target, coordinates, models):
     )
 
 
-def increments(output):
-    """RMS coefficient increments of the iterations, for each basis."""
+def increments(output, model, times, streams, block=32):
+    """Root mean square change of the leverage factor along the simulated paths in every
+    iteration, for each basis: the square root of sum_j w_j m^-1 sum_k (L^(i) - L^(i-1))^2 at
+    (t_j, S^(i,k)_{t_j}), with the trapezoidal weights w_j of the grid and the paths of the
+    iterate L^(i) on the training sample."""
+    paths = simulate(model, times, streams["training"](), s.TRAINING_PATHS)
+    weights = np.asarray(trapezoid_weights(times))
+    base = lsv.load(output / "leverage-inputs.npz")["target"]
     result = {}
     for degrees in s.DEGREES:
         chain = lsv.load(output / f"fixed-point-{degrees[0]}-{degrees[1]}.npz")
-        beta = np.stack(
-            [np.zeros_like(np.asarray(chain[0].coefficients))]
-            + [np.asarray(c.coefficients) for c in chain]
-        )
-        result[tuple(degrees)] = np.sqrt(np.mean(np.diff(beta, axis=0) ** 2, axis=1))
+        iterates = [base, *chain]
+        values = []
+        for previous, current in zip(iterates[:-1], iterates[1:], strict=True):
+            x = paths.log_spot(current)
+            mean_square = 0.0
+            for start in range(0, times.size, block):
+                stop = min(start + block, times.size)
+                t = jnp.broadcast_to(times[start:stop], x[:, start:stop].shape)
+                difference = current(t, x[:, start:stop]) - previous(t, x[:, start:stop])
+                mean_square += float(
+                    jnp.sum(weights[start:stop] * jnp.nanmean(difference**2, axis=0))
+                )
+            values.append(math.sqrt(mean_square))
+        result[tuple(degrees)] = np.asarray(values)
     return result
 
 
@@ -268,16 +284,6 @@ def paper_tables(comparison, prices, target):
                     liquid_inside_percent=finite(100 * positions[0]),
                 )
             )
-    estimate, error, positions = statistics["particle method"]
-    table_2.append(
-        dict(
-            degrees=None,
-            label="Particle method",
-            bid_ask_loss_bp=dict(zip(LOSSES, map(finite, estimate[3:]), strict=True)),
-            two_standard_errors_bp=dict(zip(LOSSES, map(finite, 2 * error[3:]), strict=True)),
-            liquid_inside_percent=finite(100 * positions[0]),
-        )
-    )
     losses, inside = target
     table_2.append(
         dict(
@@ -462,9 +468,8 @@ def publish(pair, backbone, data, output):
     write_json(folder / "parameters.json", parameters(pair, model, target, coordinates, models))
     estimates = {name: (statistics[name][0], statistics[name][1]) for name in names}
     pooled_by_name = {name: pooled[i] for i, name in enumerate(names)}
-    draw_report_figures(
-        folder / "figures", comparison, pooled_by_name, statistics, increments(output)
-    )
+    changes = increments(output, model, times, streams)
+    draw_report_figures(folder / "figures", comparison, pooled_by_name, statistics, changes)
     chosen = paper_models(models)
     paper_prices = evaluation_prices(output / "paper-evaluation", chosen, s.PAPER_REPLICATIONS)
     tables = paper_tables(comparison, paper_prices, target_row)
@@ -478,7 +483,7 @@ def publish(pair, backbone, data, output):
             comparison,
             paper_pooled,
             estimates,
-            increments(output),
+            changes,
             formats,
             dpi,
             ("smiles", "convergence"),

@@ -120,7 +120,7 @@ def draw_report_figures(directory, comparison, pooled, statistics, increments):
     for degrees in DEGREES:
         rms = np.asarray(increments[tuple(degrees)])
         axes[0].plot(np.arange(1, rms.size + 1), rms, label=tag(degrees), **style(kind_of(degrees)))
-    axes[0].set(xlabel="fixed-point iteration", ylabel="RMS coefficient increment", yscale="log")
+    axes[0].set(xlabel="fixed-point iteration", ylabel="RMS leverage increment", yscale="log")
     axes[0].set_xticks(range(0, ITERATIONS + 1, 2))
     iterations = (0, *EVALUATED_ITERATIONS)
     for metric, ax in enumerate(axes[1:]):
@@ -377,8 +377,9 @@ def write_report(
         "",
         "![Convergence](paper/convergence.png)",
         "",
-        "Root mean square coefficient increment of the fixed-point iteration, and the bid-ask loss "
-        "along the correction steps of the (6,8) basis ([PDF](paper/convergence.pdf)).",
+        "Root mean square change of the leverage factor along the simulated paths in every "
+        "fixed-point iteration, and the bid-ask loss along the correction steps of the (6,8) basis "
+        "([PDF](paper/convergence.pdf)).",
         "",
     ]
 
@@ -422,7 +423,8 @@ def write_report(
         "",
         "![Iterations](figures/iterations.png)",
         "",
-        "The root mean square coefficient increment of every iteration, and every metric of the "
+        "The root mean square change of the leverage factor along the simulated paths in every "
+        "iteration, and every metric of the "
         "iterates after 0, 3, 5, 8 and 12 iterations, ± two standard errors; the particle method "
         "as a horizontal line. Change of every iterate against the iterate after 12 iterations, "
         "± two paired standard errors:",
