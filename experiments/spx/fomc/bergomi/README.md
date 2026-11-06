@@ -40,7 +40,6 @@ Bid-ask loss and share of liquid quotes inside their bid-ask interval after the 
 | (6,8) | 3 iterations | 11.16 ± 1.32 | 0.85 ± 0.14 | 81% |
 | (6,8) | 5 iterations | 5.99 ± 0.97 | 0.81 ± 0.45 | 87% |
 | (6,8) | 8 iterations | 6.68 ± 1.05 | 0.96 ± 0.47 | 84% |
-| Particle method |  | 24.93 ± 1.43 | 11.18 ± 0.68 | 50% |
 | Refined SVI target |  | 7.37 | 6.40 | 42% |
 
 ![Smiles](paper/smiles.png)
@@ -49,7 +48,7 @@ Implied volatilities at the expiries nearest one week, one month and one year, a
 
 ![Convergence](paper/convergence.png)
 
-Root mean square coefficient increment of the fixed-point iteration, and the bid-ask loss along the correction steps of the (6,8) basis ([PDF](paper/convergence.pdf)).
+Root mean square change of the leverage factor along the simulated paths in every fixed-point iteration, and the bid-ask loss along the correction steps of the (6,8) basis ([PDF](paper/convergence.pdf)).
 
 ## All models
 
@@ -81,7 +80,7 @@ From here on every model is priced on 20 sets of 65,536 scrambled Sobol paths. R
 
 ![Iterations](figures/iterations.png)
 
-The root mean square coefficient increment of every iteration, and every metric of the iterates after 0, 3, 5, 8 and 12 iterations, ± two standard errors; the particle method as a horizontal line. Change of every iterate against the iterate after 12 iterations, ± two paired standard errors:
+The root mean square change of the leverage factor along the simulated paths in every iteration, and every metric of the iterates after 0, 3, 5, 8 and 12 iterations, ± two standard errors; the particle method as a horizontal line. Change of every iterate against the iterate after 12 iterations, ± two paired standard errors:
 
 | Iterate | Left wing | Central | Right wing | Bid-ask loss, all quotes | Bid-ask loss, liquid quotes |
 |---|---|---|---|---|---|

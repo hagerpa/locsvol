@@ -34,5 +34,4 @@ Bid-ask loss and share of liquid quotes inside their bid-ask interval after the 
 | (6,8) | 3 iterations | 15.34 ± 1.04 | 4.90 ± 0.61 | 51% |
 | (6,8) | 5 iterations | 12.87 ± 0.69 | 5.93 ± 0.77 | 44% |
 | (6,8) | 8 iterations | 12.73 ± 0.68 | 5.91 ± 0.77 | 44% |
-| Particle method |  | 30.02 ± 1.41 | 23.80 ± 0.78 | 16% |
 | Refined SVI target |  | 26.64 | 23.68 | 16% |

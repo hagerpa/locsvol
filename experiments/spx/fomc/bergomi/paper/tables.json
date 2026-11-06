@@ -167,19 +167,6 @@
     },
     {
       "degrees": null,
-      "label": "Particle method",
-      "bid_ask_loss_bp": {
-        "all_quotes": 24.92648665587216,
-        "liquid_quotes": 11.175676569698236
-      },
-      "two_standard_errors_bp": {
-        "all_quotes": 1.4322549973312872,
-        "liquid_quotes": 0.6846299275030168
-      },
-      "liquid_inside_percent": 50.16633399866933
-    },
-    {
-      "degrees": null,
       "label": "Refined SVI target",
       "bid_ask_loss_bp": {
         "all_quotes": 7.369847172364641,
