@@ -1,13 +1,14 @@
 """The figures of a run, drawn as in the paper.
 
 smiles: at the expiries nearest one week, one month and one year, the implied volatilities of the
-target, of the starting point L0, of the particle method and of the fixed point after five
-iterations for both bases; below, the differences to the target. convergence: the root mean
-square change of the leverage factor along the simulated paths in every iteration, and the
-bid-ask loss over all quotes along the correction steps of the (6,8) basis. spreads: the model
-prices minus the mid prices, divided by the vega, for the particle method, the (6,8) basis after
-twelve iterations and after five iterations and four correction steps, against the bid-ask band.
-Every model keeps one colour, line style and marker, so that it is recognized without colour.
+target, of the backbone as calibrated on the earlier day, of the particle method and of the
+fixed point after five iterations for both bases; below, the differences to the target.
+convergence: the root mean square change of the leverage factor along the simulated paths in
+every iteration, and the bid-ask loss over all quotes along the correction steps of the (6,8)
+basis. spreads: the model prices minus the mid prices, divided by the vega, for the particle
+method, the (6,8) basis after twelve iterations and after five iterations and four correction
+steps, against the bid-ask band. Every model keeps one colour, line style and marker, so that it
+is recognized without colour.
 """
 
 import numpy as np
@@ -164,7 +165,7 @@ def draw(
         return 100 * np.asarray(implied_volatility(price, grid_t, grid_k, calls))
 
     smile = [
-        ("starting point L0", "backbone", "backbone"),
+        ("backbone as calibrated", "backbone", "backbone"),
         ("particle method", "particle", "particle"),
         *(
             (

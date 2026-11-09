@@ -30,7 +30,7 @@ from evaluation import Comparison
 from quotes import block_weights, read_quotes
 
 import locsvol as lsv
-from locsvol.backbones import Bergomi, ForwardVariance
+from locsvol.backbones import Bergomi, ForwardVariance, flat_forward_variance
 from locsvol.calibration import (
     correction_steps,
     fit_bergomi,
@@ -44,6 +44,7 @@ from locsvol.calibration import (
 from locsvol.leverage import (
     Chart,
     Clipped,
+    Deterministic,
     Parametrized,
     quantile_bounds,
     quantile_envelope,
@@ -253,9 +254,18 @@ def corrected(models, degrees, start):
     return "starting point L0" if start == 0 else label(degrees, start)
 
 
+def backbone_as_calibrated(backbone, earlier_target, times):
+    """The pure stochastic volatility model of the earlier day as a leverage factor: for Bergomi
+    the root of the forward variance of that day's surface, for Heston the backbone itself."""
+    if backbone == "heston":
+        return Deterministic(flat_forward_variance())
+    xi = ForwardVariance(times[1:], forward_variance(earlier_target["surface"], times))
+    return Deterministic(xi)
+
+
 def paper_models(models):
     """The models of the paper's tables and figures."""
-    names = ["starting point L0", "particle method"]
+    names = ["backbone as calibrated", "starting point L0", "particle method"]
     for degrees in s.DEGREES:
         names += [label(degrees, s.PAPER_TABLE_ITERATIONS), label(degrees, s.ITERATIONS)]
         names += [corrected(models, degrees, n) for n in s.CORRECTION_STARTS]
@@ -310,6 +320,7 @@ def run(pair, backbone, data, output):
     target = kept(output / "target.npz", lambda: fit_target(quotes))
     times = time_grid(quotes)
     models = calibrate(output, backbone, quotes, target, model, times, streams)
+    models["backbone as calibrated"] = backbone_as_calibrated(backbone, earlier_target, times)
     comparison = Comparison(quotes, target["surface"])
     price(
         output / "evaluation",

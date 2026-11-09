@@ -62,6 +62,10 @@ def plain(value):
 
 def describe(name):
     """Method, degrees, iterations and correction steps of a model name of run.py."""
+    if name == "backbone as calibrated":
+        return dict(
+            method="backbone as calibrated", degrees=None, iterations=None, correction_steps=None
+        )
     if name == "starting point L0":
         return dict(method="fixed-point iteration", degrees=None, iterations=0, correction_steps=0)
     if name == "particle method":
@@ -421,8 +425,9 @@ def results_section(summaries):
         "",
         "- `paper/`: the paper's tables (`tables.md`, `tables.json`) and figures (PDF and PNG), "
         f"from {s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths.",
-        "- `summary.json`: for every model (the starting point L0, the fixed-point iterates after "
-        "3, 5, 8 and 12 iterations of both bases, every correction step and the particle method) "
+        "- `summary.json`: for every model (the backbone as calibrated, the starting point L0, the "
+        "fixed-point iterates after 3, 5, 8 and 12 iterations of both bases, every correction step "
+        "and the particle method) "
         "the RMSE per region and the bid-ask loss over all and over the liquid quotes, each with "
         "its standard error, and the shares of liquid quotes inside, within Monte Carlo noise of "
         "and clearly outside their intervals; also the bid-ask statistics of the target surface.",

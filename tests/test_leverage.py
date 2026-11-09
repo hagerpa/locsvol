@@ -5,7 +5,9 @@ import numpy as np
 from jax.scipy.special import ndtri
 
 import locsvol  # noqa: F401
+from locsvol.backbones.bergomi import ForwardVariance, flat_forward_variance
 from locsvol.leverage.chart import Chart, quantile_bounds, quantile_envelope
+from locsvol.leverage.deterministic import Deterministic
 from locsvol.leverage.parametrized import Parametrized
 from locsvol.leverage.table import Clipped, Table, table_times, tabulate
 from locsvol.regression.chebyshev import ChebyshevTensor
@@ -91,3 +93,12 @@ def test_parametrized_leverage_at_one_time_equals_the_vector_evaluation():
         leverage.log_factor(t, x), basis(c(t, x)) @ beta, rtol=1e-13, atol=1e-15
     )
     np.testing.assert_allclose(leverage.shifted(-beta).coefficients, 0.0)
+
+
+def test_deterministic_leverage_is_the_root_of_the_forward_variance_and_ignores_the_state():
+    xi = ForwardVariance(jnp.asarray([0.5, 1.0]), jnp.asarray([0.04, 0.09, 0.16]))
+    leverage = Deterministic(xi)
+    t = jnp.asarray([0.1, 0.7, 2.0])
+    x = jnp.asarray([[-0.3, 0.0, 0.4]])
+    np.testing.assert_allclose(leverage(t, x), jnp.broadcast_to(jnp.sqrt(xi(t)), (1, 3)))
+    np.testing.assert_allclose(Deterministic(flat_forward_variance())(t, x[0]), 1.0)
