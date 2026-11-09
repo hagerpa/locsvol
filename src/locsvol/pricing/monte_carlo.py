@@ -9,6 +9,11 @@ X = log(S/F) from the Euler scheme on a grid that contains T,
 The paths of one scrambled Sobol sequence are dependent, so independent scramblings are averaged
 as replications.
 
+Optionally, each price is estimated from the payoff of the out-of-the-money option of its strike
+and converted by put-call parity, C - P = 1 - e^k, which holds exactly for the scheme since
+e^{X} is a martingale under it. For an option deep in the money, the direct estimator carries the
+sampling error of the forward, which can exceed the time value; the converted estimator does not.
+
 Derivatives are pathwise (Broadie and Glasserman, Manag. Sci. 42, 1996): for a parameter beta
 that moves the paths,
 
@@ -59,15 +64,21 @@ def payoffs(x, log_strikes, is_call):
     return jnp.maximum(sign * (jnp.exp(x) - jnp.exp(log_strikes)), 0.0)
 
 
-def monte_carlo_prices(paths, leverage, maturities, log_strikes, is_call):
-    """Prices (quotes,) of the model with the leverage factor, from the paths of one stream."""
+def monte_carlo_prices(paths, leverage, maturities, log_strikes, is_call, out_of_the_money=False):
+    """Prices (quotes,) of the model with the leverage factor, from the paths of one stream.
+
+    With out_of_the_money, the out-of-the-money option of each strike is priced and the result is
+    converted by put-call parity; see the module docstring.
+    """
     nodes = maturity_nodes(paths.times, maturities)
     x = paths.log_spot(leverage)
     k, call = jnp.asarray(log_strikes), jnp.asarray(is_call)
+    priced = (k >= 0) if out_of_the_money else call
     prices = jnp.zeros(k.size)
     for node, rows in zip(*maturity_groups(nodes), strict=True):
-        prices = prices.at[rows].set(jnp.mean(payoffs(x[:, node, None], k[rows], call[rows]), 0))
-    return prices
+        prices = prices.at[rows].set(jnp.mean(payoffs(x[:, node, None], k[rows], priced[rows]), 0))
+    parity = jnp.where(call, 1.0, -1.0) * (1.0 - jnp.exp(k))
+    return jnp.where(priced == call, prices, prices + parity)
 
 
 def replicated_prices(paths, leverage, maturities, log_strikes, is_call):

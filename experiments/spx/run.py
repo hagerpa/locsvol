@@ -274,6 +274,12 @@ def paper_models(models):
     return {name: models[name] for name in dict.fromkeys(names)}
 
 
+OUT_OF_THE_MONEY = {"backbone as calibrated"}
+"""Models priced from out-of-the-money payoffs by put-call parity: the deep puts of the model as
+calibrated on the earlier day are nearly worthless on the event day, and the sampling error of the
+forward in the in-the-money call estimator would exceed their time value."""
+
+
 def price(
     folder, models, model, times, comparison, stream, replications, paths, independent, segments=()
 ):
@@ -300,6 +306,7 @@ def price(
                     comparison.maturities,
                     comparison.log_strikes,
                     comparison.is_call,
+                    out_of_the_money=name in OUT_OF_THE_MONEY,
                 )
                 for name, leverage in models.items()
             }

@@ -64,6 +64,21 @@ def test_flat_volatility_gives_black_prices():
     assert single.shape == (4,)
 
 
+def test_out_of_the_money_estimator_converts_by_parity():
+    maturities = jnp.array([1.0, 1.0, 1.0, 1.0])
+    k, call = jnp.array([-0.3, -0.3, 0.3, 0.3]), jnp.array([True, False, True, False])
+    paths = flat_paths(4096)
+    direct = np.asarray(monte_carlo_prices(paths, flat, maturities, k, call))
+    converted = np.asarray(
+        monte_carlo_prices(paths, flat, maturities, k, call, out_of_the_money=True)
+    )
+    parity = 1.0 - np.exp(np.asarray(k))
+    np.testing.assert_allclose(converted[[1, 2]], direct[[1, 2]], atol=1e-15)
+    np.testing.assert_allclose(converted[0], direct[1] + parity[0], atol=1e-15)
+    np.testing.assert_allclose(converted[3], direct[2] - parity[3], atol=1e-15)
+    np.testing.assert_allclose(converted, direct, atol=1.5e-2)
+
+
 def test_derivatives_match_forward_mode_differentiation():
     paths, lev = flat_paths(64), leverage()
     nodes = jnp.array([4, 16])
