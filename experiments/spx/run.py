@@ -242,6 +242,8 @@ def calibrate(output, backbone, quotes, target, model, times, streams):
             steps = kept(output / f"correction-{degrees[0]}-{degrees[1]}-after-{n}.npz", correct)
             for m, leverage in enumerate(steps, start=1):
                 models[label(degrees, n, m)] = leverage
+    earlier_target = lsv.load(output / "target-earlier-day.npz")
+    models["backbone as calibrated"] = backbone_as_calibrated(backbone, earlier_target, times)
     return models
 
 
@@ -320,7 +322,6 @@ def run(pair, backbone, data, output):
     target = kept(output / "target.npz", lambda: fit_target(quotes))
     times = time_grid(quotes)
     models = calibrate(output, backbone, quotes, target, model, times, streams)
-    models["backbone as calibrated"] = backbone_as_calibrated(backbone, earlier_target, times)
     comparison = Comparison(quotes, target["surface"])
     price(
         output / "evaluation",

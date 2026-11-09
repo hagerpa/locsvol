@@ -60,7 +60,7 @@ RC = {
     "ytick.major.size": 2.5,
     "xtick.major.width": 0.6,
     "ytick.major.width": 0.6,
-    "legend.fontsize": 8,
+    "legend.fontsize": 10,
 }
 GRID = dict(axis="y", color="#E4E4E4", linewidth=0.5)
 KIND_STYLES = {

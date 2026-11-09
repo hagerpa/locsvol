@@ -129,7 +129,7 @@ The RMSE columns give the root mean squared difference between model and target 
 Each folder opens with its report, `README.md`: the paper's tables and figures for that date pair and backbone, every model's errors and bid-ask losses, the fixed-point iteration iterate by iterate, every correction chain, and the smiles and prices at every expiry. Besides it:
 
 - `paper/`: the paper's tables (`tables.md`, `tables.json`) and figures (PDF and PNG), from 320 sets of 65,536 independent paths.
-- `summary.json`: for every model (the backbone as calibrated on the earlier day, the starting point L0, the fixed-point iterates after 3, 5, 8 and 12 iterations of both bases, every correction step and the particle method) the RMSE per region and the bid-ask loss over all and over the liquid quotes, each with its standard error, and the shares of liquid quotes inside, within Monte Carlo noise of and clearly outside their intervals; also the bid-ask statistics of the target surface.
+- `summary.json`: for every model (the backbone as calibrated, the starting point L0, the fixed-point iterates after 3, 5, 8 and 12 iterations of both bases, every correction step and the particle method) the RMSE per region and the bid-ask loss over all and over the liquid quotes, each with its standard error, and the shares of liquid quotes inside, within Monte Carlo noise of and clearly outside their intervals; also the bid-ask statistics of the target surface.
 - `parameters.json`: the fitted backbone, the SSVI and refined SVI target, the coordinates and the coefficients of every parametrized leverage factor, with the code commit and the SHA-256 of both data files.
 - `figures/`: the figures of the report.
 
