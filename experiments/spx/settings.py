@@ -51,7 +51,7 @@ STATE_NODES = 801
 PATHS_BEYOND_EDGE = 3.2768  # kappa: the local volatility is read, and the state coordinate ends, at
 # the SSVI quantiles x_eps(t) and x_{1-eps}(t), eps = kappa / N for N = TRAINING_PATHS (1e-4)
 DEGREES = ((10, 12), (6, 8))  # Chebyshev degrees in time and state
-RIDGE = 2.5e-7  # on the coefficients alpha = 2 zeta of the regression
+RIDGE = 2.5e-7  # on the coefficients zeta of the regression (2.11); the leverage shifts by -zeta/2
 ROW_STRIDE = 4  # every fourth time node of every path
 ITERATIONS = 12
 EVALUATED_ITERATIONS = (3, 5, 8, 12)
