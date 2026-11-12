@@ -11,10 +11,16 @@ license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [
-    { name = "Christian Bayer" },
-    { name = "Denis Belomestny" },
     { name = "Paul P. Hager" },
-    { name = "John Schoenmakers" },
+]
+keywords = ["local stochastic volatility", "calibration", "fixed-point iteration", "Monte Carlo", "JAX"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Mathematics",
 ]
 dependencies = [
     "jax==0.11.1",
@@ -27,13 +33,11 @@ dependencies = [
 Repository = "https://github.com/hagerpa/locsvol"
 
 [project.optional-dependencies]
-heston = [
-    "roughprix @ git+https://github.com/hagerpa/roughprix.git@320dfd9792f8f2b32a1e85ef66309440e37a7f35",
-]
+heston = ["roughprix==0.1.0"]
 study = [
     "matplotlib==3.10.8",
     "wrds==3.5.0",
-    "roughprix @ git+https://github.com/hagerpa/roughprix.git@320dfd9792f8f2b32a1e85ef66309440e37a7f35",
+    "roughprix==0.1.0",
 ]
 dev = ["pytest==9.1.1", "ruff==0.15.0"]
 

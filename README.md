@@ -22,7 +22,7 @@ which can be refined further against bid and ask quotes.
 
 ## Example
 
-[examples/quickstart.py](examples/quickstart.py) calibrates a two-factor Bergomi model to a
+[examples/quickstart.py][quickstart] calibrates a two-factor Bergomi model to a
 smile made up from a known SSVI surface, so it runs without market data (about a minute on a
 laptop). Its core is
 
@@ -68,25 +68,36 @@ volatility.
 | Calibration | fixed-point iteration, particle method of Guyon and Henry-Labordère, correction against bid and ask quotes, fits of the backbone |
 | Pricing | Black formula, implied volatility, Monte Carlo prices |
 
-[docs/method.md](docs/method.md) explains the method step by step, with the functions that
-implement each step, and [docs/models.md](docs/models.md) describes every model. Each module's
+[docs/method.md][method] explains the method step by step, with the functions that
+implement each step, and [docs/models.md][models] describes every model. Each module's
 folder under `src/locsvol/` has a `README.md` that explains its construction in the terms of the
 paper.
 
 ## The study of the paper
 
-[experiments/spx](experiments/spx) contains the calibration to S&P 500 options of the paper: its
+[experiments/spx][spx] contains the calibration to S&P 500 options of the paper: its
 specification, the script that runs it with this package, and the results for every date pair and
-backbone. [experiments/essvi](experiments/essvi) repeats the study on a parametric target of the
+backbone. [experiments/essvi][essvi] repeats the study on a parametric target of the
 literature, the eSSVI surface of Farkas, Ferrari and Ulrych for SPX on 23 June 2020 with the
 reference models of Beiglböck, Hasenbichler and Pammer as backbones.
 
 ## Installation
 
 ```sh
-pip install git+https://github.com/hagerpa/locsvol
+pip install locsvol
 ```
+
+The fit of the Heston backbone needs the package roughprix, which the extra `heston` adds
+(`pip install "locsvol[heston]"`). To rerun the study of the paper, clone the repository and
+install it with the extra `study`, `pip install -e ".[study]"`.
 
 ## License
 
-locsvol is licensed under the Apache License 2.0; see [LICENSE](LICENSE).
+locsvol is licensed under the Apache License 2.0; see [LICENSE][license].
+
+[quickstart]: https://github.com/hagerpa/locsvol/blob/main/examples/quickstart.py
+[method]: https://github.com/hagerpa/locsvol/blob/main/docs/method.md
+[models]: https://github.com/hagerpa/locsvol/blob/main/docs/models.md
+[spx]: https://github.com/hagerpa/locsvol/tree/main/experiments/spx
+[essvi]: https://github.com/hagerpa/locsvol/tree/main/experiments/essvi
+[license]: https://github.com/hagerpa/locsvol/blob/main/LICENSE

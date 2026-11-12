@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "locsvol: a JAX package for local stochastic volatility calibration"
+abstract: "Calibration of local stochastic volatility models by fixed-point iteration."
+authors:
+  - family-names: Hager
+    given-names: Paul P.
+    affiliation: University of Vienna
+version: 1.0.0
+license: Apache-2.0
+repository-code: "https://github.com/hagerpa/locsvol"
+keywords:
+  - local stochastic volatility
+  - calibration
+  - fixed-point iteration
+  - Monte Carlo
+  - JAX
