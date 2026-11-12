@@ -86,3 +86,7 @@ reference models of Beiglböck, Hasenbichler and Pammer as backbones.
 ```sh
 pip install git+https://github.com/hagerpa/locsvol
 ```
+
+## License
+
+locsvol is licensed under the Apache License 2.0; see [LICENSE](LICENSE).
