@@ -103,7 +103,9 @@ def backbone_model(backbone):
     """The reference Heston or one-factor Bergomi model of the light-speed paper."""
     if backbone == "heston":
         return Heston(**p.HESTON, floor=s.HESTON_FLOOR)
-    xi = ForwardVariance(jnp.asarray(p.FORWARD_VARIANCE_BOUNDARIES), jnp.asarray(p.FORWARD_VARIANCE))
+    xi = ForwardVariance(
+        jnp.asarray(p.FORWARD_VARIANCE_BOUNDARIES), jnp.asarray(p.FORWARD_VARIANCE)
+    )
     return Bergomi(**p.BERGOMI, floor=s.BERGOMI_FIXED["floor"], forward_variance=xi)
 
 
@@ -154,7 +156,9 @@ def calibrate(output, surface, ssvi, model, times, streams):
     def particle():
         carrier = ForwardVariance(times[1:], forward_variance(surface, times))
         volatility = variance_swap_volatility(carrier, times[:-1])
-        return particle_method(local_volatility, paths(), particle_bounds(surface, times), volatility)
+        return particle_method(
+            local_volatility, paths(), particle_bounds(surface, times), volatility
+        )
 
     models["particle method"] = kept(output / "particle.npz", particle)
     return models

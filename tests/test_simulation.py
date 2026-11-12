@@ -80,4 +80,6 @@ def test_segmented_increments_have_brownian_variance_and_keep_antithetic_pairs()
     second = brownian_increments(times[10:16] - times[10], dict(STREAM, segment=1), 2048, 2)
     assert not np.array_equal(segmented[:, 10:15], second)
     np.testing.assert_array_equal(np.sort(segmented[:, 10:15], axis=0), np.sort(second, axis=0))
-    np.testing.assert_array_equal(segmented, brownian_increments(times, STREAM, 2048, 2, segments=(1.0, 2.0)))
+    np.testing.assert_array_equal(
+        segmented, brownian_increments(times, STREAM, 2048, 2, segments=(1.0, 2.0))
+    )

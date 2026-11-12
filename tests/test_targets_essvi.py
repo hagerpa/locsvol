@@ -32,7 +32,9 @@ def test_total_variance_matches_the_published_formula_and_vanishes_at_zero():
     s = surface()
     k = np.linspace(-1.5, 1.5, 61)
     for tenor, atm in zip(TENORS, ATM, strict=True):
-        np.testing.assert_allclose(s.total_variance(tenor, k), paper_essvi(atm**2 * tenor, k), rtol=1e-13)
+        np.testing.assert_allclose(
+            s.total_variance(tenor, k), paper_essvi(atm**2 * tenor, k), rtol=1e-13
+        )
         np.testing.assert_allclose(s.implied_volatility(tenor, 0.0), atm, rtol=1e-13)
     assert s.total_variance(0.0, 0.3) == 0.0
     assert np.isnan(s.total_variance(3.5, 0.0)) and np.isnan(s.total_variance(1.0, 25.0))
@@ -64,7 +66,9 @@ def test_right_time_derivative_at_the_knots_and_extension():
     assert np.isnan(s.jet(3.0, 0.1)[1])
     extended = s.extended(3.2)
     assert extended.theta_times[-1] == 3.2 and np.isfinite(extended.jet(3.05, 0.1)[1])
-    np.testing.assert_allclose(extended.total_variance(2.5, 0.1), s.total_variance(2.5, 0.1), rtol=1e-14)
+    np.testing.assert_allclose(
+        extended.total_variance(2.5, 0.1), s.total_variance(2.5, 0.1), rtol=1e-14
+    )
     slope = (s.theta_values[-1] - s.theta_values[-2]) / (TENORS[-1] - TENORS[-2])
     np.testing.assert_allclose(extended.theta(3.2), s.theta_values[-1] + 0.2 * slope, rtol=1e-13)
 
@@ -76,8 +80,12 @@ def test_reduces_to_ssvi_without_the_theta_dependence_and_at_short_times():
     s = SSVI(e.theta_times, e.theta_values, -0.6, ETA, 0.5)
     theta = float(e.theta(0.25))
     k = np.linspace(-0.5, 0.5, 21)
-    np.testing.assert_allclose(e.total_variance(0.25, k), s.total_variance(0.25, k) * 1.0, rtol=theta)
-    np.testing.assert_allclose(e.initial_local_variance(0.0), s.initial_local_variance(0.0), rtol=1e-13)
+    np.testing.assert_allclose(
+        e.total_variance(0.25, k), s.total_variance(0.25, k) * 1.0, rtol=theta
+    )
+    np.testing.assert_allclose(
+        e.initial_local_variance(0.0), s.initial_local_variance(0.0), rtol=1e-13
+    )
     assert np.isnan(e.initial_local_variance(0.1))
 
 

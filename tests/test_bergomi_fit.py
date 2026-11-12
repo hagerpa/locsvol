@@ -113,13 +113,19 @@ def test_uncertified_step_is_taken_at_a_looser_tolerance(monkeypatch):
     def certified_only_when_loose(loss, margins, jacobian, solver):
         tolerances.append(solver.tolerance)
         if solver.tolerance < 1e-9:
-            raise ConvergenceError("SLSQP: status 8, Positive directional derivative for linesearch")
+            raise ConvergenceError(
+                "SLSQP: status 8, Positive directional derivative for linesearch"
+            )
         return original(loss, margins, jacobian, solver)
 
     monkeypatch.setattr(bergomi_fit, "slsqp", certified_only_when_loose)
     paths = increments(64)
     maturities, k, call = jnp.array([0.5, 1.0, 1.0]), jnp.array([0.0, -0.1, 0.1]), jnp.ones(3, bool)
-    quoted, _ = bergomi_prices(TEMPLATE, jnp.array([0.3, 0.0, 0.0, 0.0]), TIMES, paths, maturities, k, call)
+    quoted, _ = bergomi_prices(
+        TEMPLATE, jnp.array([0.3, 0.0, 0.0, 0.0]), TIMES, paths, maturities, k, call
+    )
     weights, vegas = jnp.full(3, 1 / 3), jnp.full(3, 0.1)
-    fitted = fit_bergomi(TEMPLATE, TIMES, paths, maturities, k, call, quoted, quoted, weights, vegas, (0.25,))
+    fitted = fit_bergomi(
+        TEMPLATE, TIMES, paths, maturities, k, call, quoted, quoted, weights, vegas, (0.25,)
+    )
     assert len(fitted) == 1 and tolerances == [1e-10, 1e-8]

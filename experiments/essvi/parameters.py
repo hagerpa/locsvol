@@ -1,6 +1,7 @@
 """Every number of the parametric study; everything else follows settings.py of the SPX study."""
 
-HORIZON = 3.05  # years; the grid and the leverage factor end here, the eSSVI's theta is continued linearly to it
+# years; the grid and the leverage factor end here, the eSSVI's theta is continued linearly to it
+HORIZON = 3.05
 SEGMENTS = (1.0, 2.0)  # the Sobol points restart at these times (one scramble per segment)
 
 # The target: the eSSVI surface of Farkas, Ferrari and Ulrych (2022, Tables 7 and 8) for SPX on

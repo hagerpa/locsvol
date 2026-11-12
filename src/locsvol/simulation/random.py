@@ -165,7 +165,9 @@ def brownian_increments(
             )
             if n > 0:
                 count = paths // 2 if antithetic else paths
-                order = jax.random.permutation(stream_key(dict(stream, segment=n, pairing=True)), count)
+                order = jax.random.permutation(
+                    stream_key(dict(stream, segment=n, pairing=True)), count
+                )
                 piece = piece[jnp.concatenate((order, order + count)) if antithetic else order]
             pieces.append(piece)
         return jnp.concatenate(pieces, axis=1)

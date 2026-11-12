@@ -15,12 +15,14 @@ Every slice is an SVI slice with the SSVI shape, so w, w_k and w_kk are those of
 theta phi and rho of the slice: with z = theta phi k, R = sqrt((z + rho theta)^2 + (1 - rho^2)
 theta^2) and B = rho + (z + rho theta) / R,
 
-    w = (theta + rho z)/2 + R/2,   w_k = theta phi B / 2,   w_kk = (theta phi)^2 (1 - rho^2) theta^2 / (2 R^3),
+    w = (theta + rho z)/2 + R/2,   w_k = theta phi B / 2,
+    w_kk = (theta phi)^2 (1 - rho^2) theta^2 / (2 R^3),
 
 and the derivative in T follows from the chain rule through theta, with the right derivative
 theta'(T) at the knots:
 
-    w_T = theta'(T)/2 (1 + rho' z + z' B + s (rho' theta + rho) + ((1 - rho^2) theta - rho rho' theta^2) / R),
+    w_T = theta'(T)/2 (1 + rho' z + z' B + s (rho' theta + rho)
+                       + ((1 - rho^2) theta - rho rho' theta^2) / R),
 
 where s = (z + rho theta) / R, z' = (theta phi)' k with (theta phi)' = theta phi (1 - lambda) /
 (theta (1 + theta)) and rho' = -a (rho_0 - rho_m) exp(-a theta). Where theta + rho z or rho and s

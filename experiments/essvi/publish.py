@@ -19,7 +19,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import parameters as p
-from calibrate import backbone_model, calibrate, paper_models, synthetic_quotes, target_surface, time_grid
+from calibrate import (
+    backbone_model,
+    calibrate,
+    paper_models,
+    synthetic_quotes,
+    target_surface,
+    time_grid,
+)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "spx"))
 import settings as s  # noqa: E402, the SPX study's settings
@@ -87,7 +94,12 @@ def table(rows, title, columns):
             for e, se in zip(row["estimate"], row["standard_error"], strict=True)
         ]
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
-    lines += ["", "Monte Carlo noise alone accounts for the following part of these RMSEs:", "", *header]
+    lines += [
+        "",
+        "Monte Carlo noise alone accounts for the following part of these RMSEs:",
+        "",
+        *header,
+    ]
     for name, row in rows.items():
         lines.append(f"| {name} | " + " | ".join(cell(v) for v in row["noise_floor"]) + " |")
     return lines
@@ -116,9 +128,19 @@ def smiles(path, comparison, pooled):
     fig, axes = plt.subplots(2, 3, figsize=(7.6, 4.8))
     for ax, maturity in zip(axes.ravel(), p.MATURITIES, strict=False):
         rows = t == maturity
-        ax.plot(k[rows], target[rows], color="black", linestyle="--", linewidth=1, label="eSSVI target")
+        ax.plot(
+            k[rows], target[rows], color="black", linestyle="--", linewidth=1, label="eSSVI target"
+        )
         for name, style in styles().items():
-            ax.plot(k[rows], sigma[name][rows], linewidth=1, markersize=3, fillstyle="none", label=name, **style)
+            ax.plot(
+                k[rows],
+                sigma[name][rows],
+                linewidth=1,
+                markersize=3,
+                fillstyle="none",
+                label=name,
+                **style,
+            )
         ax.set_title(f"T = {maturity:g} y", fontsize=9)
         ax.tick_params(labelsize=8)
     for ax in axes[1]:
@@ -172,20 +194,32 @@ def publish(backbone, output):
     lines = [
         f"# The parametric target with the {backbone.capitalize()} backbone",
         "",
-        "Root mean squared error of the implied volatility against the eSSVI surface, in volatility",
-        "basis points, over the left wing, the central region and the right wing, and over the central",
-        "region of each maturity; point estimates ± two standard errors (paired delete-one jackknife",
+        "Root mean squared error of the implied volatility against the eSSVI surface, "
+        "in volatility",
+        "basis points, over the left wing, the central region and the right wing, "
+        "and over the central",
+        "region of each maturity; point estimates ± two standard errors "
+        "(paired delete-one jackknife",
         "over the sets of paths).",
         "",
-        *table(independent, f"On {s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths", columns),
+        *table(
+            independent,
+            f"On {s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths",
+            columns,
+        ),
         "",
-        *table(sobol, f"On {s.EVALUATION_REPLICATIONS} sets of {s.EVALUATION_PATHS:,} Sobol paths", columns),
+        *table(
+            sobol,
+            f"On {s.EVALUATION_REPLICATIONS} sets of {s.EVALUATION_PATHS:,} Sobol paths",
+            columns,
+        ),
         "",
         "## Smiles",
         "",
         "![smiles](figures/smiles.png)",
         "",
-        f"Implied volatilities of the models on the {s.PAPER_REPLICATIONS} sets of independent paths",
+        f"Implied volatilities of the models on the {s.PAPER_REPLICATIONS} "
+        "sets of independent paths",
         "at the five maturities, with the eSSVI target.",
         "",
     ]
@@ -199,10 +233,12 @@ def results_section(results):
     lines = [
         "## Results",
         "",
-        "Each folder `<backbone>/` holds the results of one run of `calibrate.py`. Left wing, central",
+        "Each folder `<backbone>/` holds the results of one run of `calibrate.py`. "
+        "Left wing, central",
         "region and right wing RMSE against the eSSVI surface, in volatility basis points, on",
         f"{s.PAPER_REPLICATIONS} sets of {s.PAPER_PATHS:,} independent paths, after {s.ITERATIONS} "
-        f"fixed-point iterations; after {s.PAPER_TABLE_ITERATIONS}, the maturities of two and three",
+        f"fixed-point iterations; after {s.PAPER_TABLE_ITERATIONS}, "
+        "the maturities of two and three",
         "years are still converging, and the reports have those numbers as well:",
         "",
         "| Backbone | " + " | ".join(f"RMSE, {name}" for name in shown) + " |",
@@ -216,11 +252,14 @@ def results_section(results):
             return " / ".join(cell(v) for v in row["estimate"][:3])
 
         name = record["backbone"]
-        lines.append(f"| [{name.capitalize()}]({name}) | " + " | ".join(rmse(rows[m]) for m in shown) + " |")
+        lines.append(
+            f"| [{name.capitalize()}]({name}) | " + " | ".join(rmse(rows[m]) for m in shown) + " |"
+        )
     lines += [
         "",
         "Each folder opens with its report, `README.md`: the tables of the regional and the",
-        "per-maturity errors on the independent and on the Sobol paths and the smile figure; beside",
+        "per-maturity errors on the independent and on the Sobol paths "
+        "and the smile figure; beside",
         "it `summary.json` with every model's errors and standard errors and `figures/`.",
         "",
     ]
