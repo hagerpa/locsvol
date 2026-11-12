@@ -1394,6 +1394,36 @@
       }
     },
     {
+      "label": "backbone as calibrated",
+      "method": "backbone as calibrated",
+      "degrees": null,
+      "iterations": null,
+      "correction_steps": null,
+      "target_rmse_bp": {
+        "left": 5685.632158490544,
+        "central": 5867.727030660885,
+        "right": 5697.732783432933
+      },
+      "target_rmse_standard_error_bp": {
+        "left": 2.2217711654708556,
+        "central": 1.9578881146654918,
+        "right": 3.3203520886187006
+      },
+      "bid_ask_loss_bp": {
+        "all_quotes": 10684.982882738754,
+        "liquid_quotes": 7283.347828252236
+      },
+      "bid_ask_loss_standard_error_bp": {
+        "all_quotes": 4.557101369816115,
+        "liquid_quotes": 2.773595286628575
+      },
+      "liquid_quotes_percent": {
+        "inside": 0.0,
+        "within_noise": 0.0,
+        "clearly_outside": 100.0
+      }
+    },
+    {
       "label": "target surface",
       "method": "refined SVI target",
       "degrees": null,
