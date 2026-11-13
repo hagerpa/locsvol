@@ -149,3 +149,6 @@ run again. `results.py` writes the results of the run to `<pair>/<backbone>/`: t
 `README.md` with the paper's tables and figures for that pair and backbone and every other model
 of the run, `summary.json`, `parameters.json`, and the figures (`report.py`); it also rebuilds
 the [Results](#results) section above from every published run.
+
+The Heston backbones of the published runs were fitted with roughprix as of 18 September 2026,
+before its release 0.1.0; with 0.1.0 the fitted parameters agree to a relative 4e-5.
