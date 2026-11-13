@@ -27,7 +27,7 @@ from date_pairs import PAIRS
 from evaluation import Comparison, jackknife
 from figures import draw
 from report import draw_report_figures, write_report
-from run import calibrate, corrected, day_quotes, label, paper_models, time_grid
+from run import OUT_OF_THE_MONEY, calibrate, corrected, day_quotes, label, paper_models, time_grid
 
 import locsvol as lsv
 from locsvol.calibration.gauss_newton import interval_residuals
@@ -88,19 +88,33 @@ def evaluation_prices(folder, names, replications):
 
 
 def model_statistics(comparison, prices):
-    """Estimates, standard errors and liquid positions of every model, paired over replications."""
+    """Estimates, standard errors and liquid positions of every model, paired over replications;
+    the backbone as calibrated is compared with the target where its prices are resolved."""
     names = list(prices)
     panel = jnp.stack([prices[name] for name in names], axis=1)
     estimate, error, _ = jackknife(panel, comparison.statistics)
     positions = comparison.positions(panel)
-    return (
-        {
-            name: (np.asarray(estimate[i]), np.asarray(error[i]), np.asarray(positions[i]))
-            for i, name in enumerate(names)
-        },
-        jnp.mean(panel, axis=0),
-        names,
-    )
+    statistics = {
+        name: (np.asarray(estimate[i]), np.asarray(error[i]), np.asarray(positions[i]))
+        for i, name in enumerate(names)
+    }
+    for name in OUT_OF_THE_MONEY & set(names):
+        restricted = comparison.restricted(comparison.resolved(prices[name]))
+        own_estimate, own_error, _ = jackknife(prices[name], restricted.statistics)
+        statistics[name] = (np.asarray(own_estimate), np.asarray(own_error), statistics[name][2])
+    return statistics, jnp.mean(panel, axis=0), names
+
+
+def resolved_prices(comparison, prices):
+    """Pooled prices of every model, with nan at the grid points where the replications of the
+    backbone as calibrated do not resolve its price."""
+    pooled = {name: jnp.mean(p, axis=0) for name, p in prices.items()}
+    for name in OUT_OF_THE_MONEY & set(prices):
+        kept = np.concatenate(
+            (np.ones(comparison.count, dtype=bool), comparison.resolved(prices[name]))
+        )
+        pooled[name] = jnp.where(kept, pooled[name], jnp.nan)
+    return pooled
 
 
 def target_statistics(comparison, surface):
@@ -481,7 +495,7 @@ def publish(pair, backbone, data, output):
     (folder / "paper").mkdir(exist_ok=True)
     write_json(folder / "paper" / "tables.json", tables)
     (folder / "paper" / "tables.md").write_text(tables_markdown(tables))
-    paper_pooled = {name: jnp.mean(p, axis=0) for name, p in paper_prices.items()}
+    paper_pooled = resolved_prices(comparison, paper_prices)
     for formats, dpi in ((("pdf",), "figure"), (("png",), 200)):
         draw(
             folder / "paper",

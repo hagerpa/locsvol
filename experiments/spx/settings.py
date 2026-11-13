@@ -70,6 +70,7 @@ SUPPORT = (456, 81)  # time nodes and states of the support points
 # Evaluation (Section 3.4)
 COMPARISON_STRIKES = 81  # per maturity, between the smallest and largest quoted log strike
 WING = 0.4  # left wing k <= 0.4 k_min(T), right wing k >= 0.4 k_max(T)
+RESOLUTION = 0.25  # backbone as calibrated: largest relative standard error of an evaluated price
 PAPER_TABLE_ITERATIONS = 5
 
 

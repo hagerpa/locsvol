@@ -13,14 +13,22 @@ largest quoted one. From the prices pooled over the replications:
 - the shares of liquid quotes inside their bid-ask interval, outside by less than two standard
   errors of the pooled price (within noise), and outside by more.
 
+The backbone as calibrated on the earlier day is priced at the strikes of the event day, and in the
+far wings of the shortest expiries few or none of its paths end in the money. Its implied
+volatilities are therefore compared, and drawn, only at the grid points where its out-of-the-money
+price is positive with a standard error of at most a quarter of it; the regions are weighted as
+above over these points.
+
 Standard errors come from the paired delete-one jackknife over the replications: each statistic
 is recomputed from the prices pooled over all replications but one, deleting the same replication
 for every model.
 """
 
+from copy import copy
+
 import jax.numpy as jnp
 import numpy as np
-from settings import COMPARISON_STRIKES, WING
+from settings import COMPARISON_STRIKES, RESOLUTION, WING
 
 from locsvol.calibration.gauss_newton import interval_residuals
 from locsvol.pricing import implied_volatility
@@ -37,8 +45,9 @@ def comparison_grid(quotes):
     return jnp.asarray(maturities), jnp.asarray(strikes)
 
 
-def region_weights(maturities, log_strikes):
-    """Weights (3, points) of the left wing, the central region and the right wing."""
+def region_weights(maturities, log_strikes, kept=None):
+    """Weights (3, points) of the left wing, the central region and the right wing; with kept, the
+    points outside it have no weight."""
     t, k = np.asarray(maturities), np.asarray(log_strikes)
     masks = np.zeros((3, k.size), dtype=bool)
     for maturity in np.unique(t):
@@ -47,6 +56,8 @@ def region_weights(maturities, log_strikes):
         masks[0] |= rows & (k < 0) & (-k >= WING * -left)
         masks[2] |= rows & (k > 0) & (k >= WING * right)
     masks[1] = ~(masks[0] | masks[2])
+    if kept is not None:
+        masks &= np.asarray(kept, dtype=bool)
     weights = np.zeros(masks.shape)
     for index, mask in enumerate(masks):
         maturities_in_region = np.unique(t[mask])
@@ -68,6 +79,22 @@ class Comparison:
         self.maturities = jnp.concatenate((quotes.maturities, self.grid[0]))
         self.log_strikes = jnp.concatenate((quotes.log_strikes, self.grid[1]))
         self.is_call = jnp.ones(self.maturities.size, dtype=bool)
+
+    def resolved(self, replication_prices):
+        """The grid points where the replications resolve the price: the out-of-the-money price,
+        the call price less its intrinsic value, is positive with a standard error of at most
+        RESOLUTION of it."""
+        grid = np.asarray(replication_prices)[:, self.count :]
+        value = grid - np.maximum(1.0 - np.exp(np.asarray(self.grid[1])), 0.0)
+        mean = value.mean(axis=0)
+        error = value.std(axis=0, ddof=1) / np.sqrt(value.shape[0])
+        return (mean > 0) & (error <= RESOLUTION * mean)
+
+    def restricted(self, kept):
+        """The comparison with its regions restricted to the grid points in kept."""
+        other = copy(self)
+        other.regions = region_weights(*self.grid, kept)
+        return other
 
     def statistics(self, prices):
         """Left, central and right RMSE and the two bid-ask losses, in bp; prices (..., all)."""

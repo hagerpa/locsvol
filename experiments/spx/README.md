@@ -99,7 +99,10 @@ k <= 0.4 k_min(T), to the right wing if k >= 0.4 k_max(T), to the central region
 each region every maturity has the same weight. Reported are the root mean squared differences in
 volatility basis points, the bid-ask loss over all and over the liquid quotes, and the share of
 liquid quotes inside their bid-ask intervals. Standard errors come from the paired delete-one
-jackknife over the sets of paths.
+jackknife over the sets of paths. The backbone as calibrated on the earlier day is priced from
+out-of-the-money payoffs at the strikes of the event day; in the far wings of the shortest expiries
+few or none of its paths end in the money, so its implied volatilities are compared and drawn only
+where its out-of-the-money price is positive with a standard error of at most a quarter of it.
 
 ## Results
 
