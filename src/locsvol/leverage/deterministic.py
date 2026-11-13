@@ -14,7 +14,8 @@ from locsvol.functions import compiled
 class Deterministic:
     """L(t, x) = sqrt(xi(t)) for a forward variance curve xi: in the LSV model, this leverage
     factor gives the pure stochastic volatility model with variance xi(t) Y_t, for instance the
-    backbone as it was calibrated, with xi = 1 the backbone itself."""
+    backbone as it was calibrated. The variance factor of the Heston backbone is
+    Y_t = V_t / E[V_t], so xi(t) = E[V_t] gives the Heston model itself."""
 
     variance: object
 

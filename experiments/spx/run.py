@@ -30,7 +30,7 @@ from evaluation import Comparison
 from quotes import block_weights, read_quotes
 
 import locsvol as lsv
-from locsvol.backbones import Bergomi, ForwardVariance, flat_forward_variance
+from locsvol.backbones import Bergomi, ForwardVariance
 from locsvol.calibration import (
     correction_steps,
     fit_bergomi,
@@ -243,7 +243,9 @@ def calibrate(output, backbone, quotes, target, model, times, streams):
             for m, leverage in enumerate(steps, start=1):
                 models[label(degrees, n, m)] = leverage
     earlier_target = lsv.load(output / "target-earlier-day.npz")
-    models["backbone as calibrated"] = backbone_as_calibrated(backbone, earlier_target, times)
+    models["backbone as calibrated"] = backbone_as_calibrated(
+        backbone, model, earlier_target, times
+    )
     return models
 
 
@@ -256,11 +258,12 @@ def corrected(models, degrees, start):
     return "starting point L0" if start == 0 else label(degrees, start)
 
 
-def backbone_as_calibrated(backbone, earlier_target, times):
+def backbone_as_calibrated(backbone, model, earlier_target, times):
     """The pure stochastic volatility model of the earlier day as a leverage factor: for Bergomi
-    the root of the forward variance of that day's surface, for Heston the backbone itself."""
+    the root of the forward variance of that day's surface, for Heston the root of the mean E[V_t]
+    by which its variance factor Y_t = V_t / E[V_t] is divided."""
     if backbone == "heston":
-        return Deterministic(flat_forward_variance())
+        return Deterministic(ForwardVariance(times[1:], model.mean(times)))
     xi = ForwardVariance(times[1:], forward_variance(earlier_target["surface"], times))
     return Deterministic(xi)
 
