@@ -194,6 +194,9 @@ def parameters(pair, model, target, coordinates, models):
         for name, leverage in models.items()
         if isinstance(leverage, Parametrized)
     ]
+    packages = ["jax", "numpy", "scipy"]
+    if type(model).__name__ == "Heston":
+        packages.append("roughprix")  # prices the options the Heston backbone is fitted to
     return dict(
         backbone=dict(family=type(model).__name__, parameters=plain(model)),
         target=dict(ssvi=plain(target["ssvi"]), refined_svi=plain(target["surface"])),
@@ -208,7 +211,7 @@ def parameters(pair, model, target, coordinates, models):
             commit=commit or None,
             earlier_day_sha256=pair.earlier_sha256,
             event_day_sha256=pair.event_sha256,
-            versions={n: importlib.metadata.version(n) for n in ("jax", "numpy", "scipy")},
+            versions={n: importlib.metadata.version(n) for n in packages},
         ),
     )
 
