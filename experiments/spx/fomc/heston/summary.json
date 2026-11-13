@@ -1400,27 +1400,27 @@
       "iterations": null,
       "correction_steps": null,
       "target_rmse_bp": {
-        "left": 5685.632158490544,
-        "central": 5867.727030660885,
-        "right": 5697.732783432933
+        "left": 886.2606917433727,
+        "central": 265.5983388360202,
+        "right": 113.53837947837441
       },
       "target_rmse_standard_error_bp": {
-        "left": 2.2217711654708556,
-        "central": 1.9578881146654918,
-        "right": 3.3203520886187006
+        "left": 2.916580603170426,
+        "central": 0.392274371830412,
+        "right": 0.2172374601722302
       },
       "bid_ask_loss_bp": {
-        "all_quotes": 10684.982882738754,
-        "liquid_quotes": 7283.347828252236
+        "all_quotes": 255.86405071255103,
+        "liquid_quotes": 189.40460877557692
       },
       "bid_ask_loss_standard_error_bp": {
-        "all_quotes": 4.557101369816115,
-        "liquid_quotes": 2.773595286628575
+        "all_quotes": 0.25328857039130004,
+        "liquid_quotes": 0.36598553981447823
       },
       "liquid_quotes_percent": {
-        "inside": 0.0,
+        "inside": 0.2661343978709248,
         "within_noise": 0.0,
-        "clearly_outside": 100.0
+        "clearly_outside": 99.73386560212909
       }
     },
     {

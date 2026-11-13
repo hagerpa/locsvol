@@ -1400,22 +1400,22 @@
       "iterations": null,
       "correction_steps": null,
       "target_rmse_bp": {
-        "left": 1884.2992462771474,
-        "central": 1329.6135141430761,
-        "right": 777.701381629321
+        "left": 1834.4489259350958,
+        "central": 1329.613514143077,
+        "right": 788.1840400372996
       },
       "target_rmse_standard_error_bp": {
-        "left": null,
-        "central": 0.2670510858312662,
-        "right": 0.937124601832998
+        "left": 2.701578946008734,
+        "central": 0.2670510858306107,
+        "right": 0.6732545544523516
       },
       "bid_ask_loss_bp": {
-        "all_quotes": 961.5109593577984,
+        "all_quotes": 961.5109593577982,
         "liquid_quotes": 1005.3482423000002
       },
       "bid_ask_loss_standard_error_bp": {
-        "all_quotes": 0.14038796896971437,
-        "liquid_quotes": 0.13564618507307222
+        "all_quotes": 0.1403879689698078,
+        "liquid_quotes": 0.135646185072994
       },
       "liquid_quotes_percent": {
         "inside": 0.0,

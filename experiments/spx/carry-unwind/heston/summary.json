@@ -1334,22 +1334,22 @@
       "iterations": null,
       "correction_steps": null,
       "target_rmse_bp": {
-        "left": 5100.027780705274,
-        "central": 5256.127578225102,
-        "right": 5379.920500496651
+        "left": 1744.1375315093696,
+        "central": 1310.235902991837,
+        "right": 735.1594028258196
       },
       "target_rmse_standard_error_bp": {
-        "left": 2.1234913870920176,
-        "central": 1.870603619056795,
-        "right": 3.655585645031459
+        "left": 2.437812200939585,
+        "central": 0.23220234380198976,
+        "right": 0.7649811794184317
       },
       "bid_ask_loss_bp": {
-        "all_quotes": 7287.223498862389,
-        "liquid_quotes": 6310.613220004002
+        "all_quotes": 966.7355387220293,
+        "liquid_quotes": 1011.2357929100668
       },
       "bid_ask_loss_standard_error_bp": {
-        "all_quotes": 3.359949856512045,
-        "liquid_quotes": 2.8063901082780047
+        "all_quotes": 0.14810052549618538,
+        "liquid_quotes": 0.14562443291355062
       },
       "liquid_quotes_percent": {
         "inside": 0.0,
