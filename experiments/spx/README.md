@@ -140,12 +140,14 @@ Each folder opens with its report, `README.md`: the paper's tables and figures f
 
 ```sh
 python experiments/spx/pull_data.py --username <wrds user>          # once, needs WRDS access
-python experiments/spx/run.py --pair fomc --backbone bergomi --output <folder>
-python experiments/spx/results.py --pair fomc --backbone bergomi --output <folder>
+python experiments/spx/run.py --pair fomc --backbone bergomi
 ```
 
 `run.py` keeps the results of its expensive steps in the output folder and reuses them when it is
-run again. `results.py` writes the results of the run to `<pair>/<backbone>/`: the report
+run again; without `--output <folder>` the folder is temporary and deleted at the end. At the end
+it writes the results of the run to `<pair>/<backbone>/` with `results.py`: the report
 `README.md` with the paper's tables and figures for that pair and backbone and every other model
 of the run, `summary.json`, `parameters.json`, and the figures (`report.py`); it also rebuilds
-the [Results](#results) section above from every published run.
+the [Results](#results) section above from every published run. From a kept folder,
+`results.py --pair fomc --backbone bergomi --output <folder>` writes them again without
+recomputing.

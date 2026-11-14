@@ -11,7 +11,7 @@ folders `<backbone>/` and summarized in [Results](#results) below.
 
 The study follows the SPX study of the paper ([experiments/spx](../spx)) step by step, with the
 same settings (`../spx/settings.py`) wherever they apply; `parameters.py` holds the numbers that
-differ, `calibrate.py` runs the study for one backbone and `publish.py` writes its results.
+differ, `calibrate.py` runs the study for one backbone and writes its results with `publish.py`.
 
 ## Target
 
@@ -84,10 +84,12 @@ it `summary.json` with every model's errors and standard errors and `figures/`.
 ## Running the study
 
 ```sh
-python experiments/essvi/calibrate.py --backbone heston --output <folder>
-python experiments/essvi/publish.py --backbone heston --output <folder>
+python experiments/essvi/calibrate.py --backbone heston
 ```
 
 `calibrate.py` keeps the results of its expensive steps in the output folder and reuses them when
-it is run again. `publish.py` writes `<backbone>/`: `README.md` with the tables and the smile
+it is run again; without `--output <folder>` the folder is temporary and deleted at the end. At
+the end it writes `<backbone>/` with `publish.py`: `README.md` with the tables and the smile
 figure, `summary.json` and `figures/`; it also rebuilds the [Results](#results) section above.
+From a kept folder, `publish.py --backbone heston --output <folder>` writes them again without
+recomputing.

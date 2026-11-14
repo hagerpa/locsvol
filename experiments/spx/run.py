@@ -1,6 +1,6 @@
 """The study of Section 3 of the paper for one date pair and backbone.
 
-    python experiments/spx/run.py --pair fomc --backbone bergomi --output <folder>
+    python experiments/spx/run.py --pair fomc --backbone bergomi
 
 1. The quotes of the earlier day, their target and the fit of the backbone (Section 3.2).
 2. The quotes of the event day and their target: SSVI, refined SVI, Dupire (Section 3.1).
@@ -12,11 +12,14 @@
 7. Prices of all models on 20 sets of 65,536 Sobol paths, and of the models of the paper's tables
    and figures on 320 sets of 65,536 independent paths (Section 3.4).
 
-Every step keeps its result in the output folder and reuses it when the script runs again.
-results.py turns the prices into the results of <pair>/<backbone>/ beside the scripts.
+Every step keeps its result in the output folder and reuses it when the script runs again;
+without --output the folder is temporary and deleted at the end. At the end results.py turns the
+prices into the results of <pair>/<backbone>/ beside the scripts; from a kept folder,
+results.py --output <folder> does so again without recomputing.
 """
 
 import argparse
+import tempfile
 import time
 from functools import cache
 from hashlib import sha256
@@ -364,9 +367,15 @@ def main():
     parser.add_argument("--pair", required=True, choices=sorted(PAIRS))
     parser.add_argument("--backbone", required=True, choices=("bergomi", "heston"))
     parser.add_argument("--data", type=Path, default=Path("data/wrds"))
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     arguments = parser.parse_args()
-    run(PAIRS[arguments.pair], arguments.backbone, arguments.data, arguments.output)
+    from results import publish  # results.py imports this script
+
+    pair = PAIRS[arguments.pair]
+    with tempfile.TemporaryDirectory() as temporary:
+        output = arguments.output or Path(temporary)
+        run(pair, arguments.backbone, arguments.data, output)
+        publish(pair, arguments.backbone, arguments.data, output)
 
 
 if __name__ == "__main__":

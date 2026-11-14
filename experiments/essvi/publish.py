@@ -125,6 +125,7 @@ def smiles(path, comparison, pooled):
         name: 1e2 * np.asarray(implied_volatility(pooled[name][count:], gt, gk, calls))
         for name in styles()
     }
+    matplotlib.use("Agg")
     fig, axes = plt.subplots(2, 3, figsize=(7.6, 4.8))
     for ax, maturity in zip(axes.ravel(), p.MATURITIES, strict=False):
         rows = t == maturity
@@ -283,7 +284,6 @@ def main():
     parser.add_argument("--backbone", required=True, choices=("bergomi", "heston"))
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
-    matplotlib.use("Agg")
     publish(arguments.backbone, arguments.output)
 
 

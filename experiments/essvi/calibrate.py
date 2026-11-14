@@ -1,6 +1,6 @@
 """The parametric study: the eSSVI surface of the light-speed paper as target, for one backbone.
 
-    python experiments/essvi/calibrate.py --backbone heston --output <folder>
+    python experiments/essvi/calibrate.py --backbone heston
 
 The steps of the SPX study (experiments/spx/run.py) with the parametric target in place of the
 market quotes and the fitted surfaces: no backbone fit (the backbones are the reference models of
@@ -8,10 +8,16 @@ Beiglboeck, Hasenbichler and Pammer), no correction steps (there are no bid-ask 
 maturities 0.25 to 3 years and the Sobol points in segments of a year (parameters.py). The
 quotes are the eSSVI's implied volatilities on the comparison band; the coordinates come from
 the SSVI fit to them, and the target local volatility is the eSSVI's own Dupire local volatility.
+
+Every step keeps its result in the output folder and reuses it when the script runs again;
+without --output the folder is temporary and deleted at the end. At the end publish.py writes the
+results of <backbone>/ beside the scripts; from a kept folder, publish.py --output <folder> does
+so again without recomputing.
 """
 
 import argparse
 import sys
+import tempfile
 from functools import cache
 from pathlib import Path
 
@@ -213,9 +219,14 @@ def main():
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("--backbone", required=True, choices=("bergomi", "heston"))
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     arguments = parser.parse_args()
-    run(arguments.backbone, arguments.output)
+    from publish import publish  # publish.py imports this script
+
+    with tempfile.TemporaryDirectory() as temporary:
+        output = arguments.output or Path(temporary)
+        run(arguments.backbone, output)
+        publish(arguments.backbone, output)
 
 
 if __name__ == "__main__":
