@@ -2,11 +2,13 @@
 
 save(path, obj) writes an object of the package, or a list, tuple or dictionary of them, into
 one .npz file: its structure (classes, fields, numbers and strings) as JSON text and its arrays
-as arrays. load(path) rebuilds the object.
+as arrays, each distinct array once, so that the iterates of a fixed-point iteration, which share
+their base table, store it once. load(path) rebuilds the object.
 A plain Python function inside an object, for instance a target given as a lambda, cannot be
 saved.
 """
 
+import hashlib
 import importlib
 import json
 from dataclasses import fields, is_dataclass
@@ -26,9 +28,10 @@ def _encode(value, arrays):
             fields={f.name: _encode(getattr(value, f.name), arrays) for f in fields(value)},
         )
     if isinstance(value, jax.Array | np.ndarray | np.generic):
-        key = f"array_{len(arrays)}"
-        arrays[key] = np.asarray(value)
-        return dict(array=key)
+        array = np.asarray(value)
+        content = (array.dtype.str, array.shape, hashlib.sha256(array.tobytes()).digest())
+        arrays.setdefault(content, (f"array_{len(arrays)}", array))
+        return dict(array=arrays[content][0])
     if isinstance(value, tuple | list):
         return {type(value).__name__: [_encode(item, arrays) for item in value]}
     if isinstance(value, dict):
@@ -46,7 +49,7 @@ def _decode(node, arrays):
             kind = getattr(kind, part)
         return kind(**{key: _decode(item, arrays) for key, item in node["fields"].items()})
     if "array" in node:
-        return jnp.asarray(arrays[node["array"]])
+        return arrays[node["array"]]
     if "tuple" in node:
         return tuple(_decode(item, arrays) for item in node["tuple"])
     if "list" in node:
@@ -60,11 +63,11 @@ def save(path, value):
     """Write the object into the .npz file path."""
     arrays = {}
     structure = json.dumps(_encode(value, arrays))
-    np.savez(path, structure=np.asarray(structure), **arrays)
+    np.savez(path, structure=np.asarray(structure), **dict(arrays.values()))
 
 
 def load(path):
     """The object saved in the .npz file path."""
     with np.load(path, allow_pickle=False) as data:
-        arrays = {key: data[key] for key in data.files if key != "structure"}
+        arrays = {key: jnp.asarray(data[key]) for key in data.files if key != "structure"}
         return _decode(json.loads(str(data["structure"])), arrays)

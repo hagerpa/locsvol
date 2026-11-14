@@ -31,6 +31,20 @@ def test_a_parametrized_leverage_factor_round_trips(tmp_path):
     )
 
 
+def test_an_array_shared_by_several_objects_is_saved_once(tmp_path):
+    times = jnp.asarray([0.0, 1.2])
+    chart = Chart(times, jnp.asarray([1e-6, 0.05]), jnp.asarray(1.0), jnp.asarray(0.5))
+    base = Table(times, jnp.linspace(-1, 1, 5), jnp.full((2, 5), 0.2), chart)
+    basis = ChebyshevTensor((1, 1))
+    chain = [Parametrized(base, chart, basis, jnp.full(4, 0.01 * i)) for i in range(3)]
+    locsvol.save(tmp_path / "chain.npz", chain)
+    with np.load(tmp_path / "chain.npz") as data:
+        assert [data[key].shape for key in data.files].count((2, 5)) == 1
+    x = jnp.linspace(-0.5, 0.5, 7)
+    for loaded, leverage in zip(locsvol.load(tmp_path / "chain.npz"), chain, strict=True):
+        np.testing.assert_array_equal(loaded(jnp.asarray(0.4), x), leverage(jnp.asarray(0.4), x))
+
+
 def test_plain_functions_cannot_be_saved(tmp_path):
     times = jnp.asarray([0.0, 1.2])
     chart = Chart(times, jnp.asarray([1e-6, 0.05]), jnp.asarray(1.0), jnp.asarray(0.5))
