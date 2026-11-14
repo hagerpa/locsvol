@@ -8,9 +8,9 @@ Root mean squared error (RMSE) of the implied volatility against the refined SVI
 
 | Method | Left | Central | Right |
 |---|---|---|---|
-| Joint regression (10,12), 5 iterations | 7.08 ± 4.62 | 5.89 ± 1.01 | 14.89 ± 0.62 |
-| Joint regression (6,8), 5 iterations | 8.44 ± 4.73 | 5.87 ± 0.95 | 17.66 ± 0.61 |
-| Particle method | 45.99 ± 3.88 | 24.28 ± 0.81 | 26.42 ± 0.40 |
+| Joint regression (10,12), 5 iterations | 7.08 ± 4.62 | 5.88 ± 1.01 | 14.89 ± 0.62 |
+| Joint regression (6,8), 5 iterations | 8.44 ± 4.73 | 5.87 ± 0.95 | 17.65 ± 0.61 |
+| Particle method | 45.99 ± 3.88 | 24.28 ± 0.81 | 26.43 ± 0.40 |
 
 Monte Carlo noise alone accounts for the following part of these RMSEs:
 
@@ -27,11 +27,11 @@ Bid-ask loss and share of liquid quotes inside their bid-ask interval after the 
 | Degrees | Correction started after | All quotes | Liquid quotes | Liquid inside |
 |---|---|---|---|---|
 | (10,12) | 0 iterations | 497.23 ± 1.10 | 448.27 ± 0.63 | 3% |
-| (10,12) | 3 iterations | 9.69 ± 0.94 | 0.16 ± 0.04 | 100% |
-| (10,12) | 5 iterations | 6.79 ± 0.85 | 0.23 ± 0.10 | 99% |
+| (10,12) | 3 iterations | 9.70 ± 0.95 | 0.18 ± 0.04 | 100% |
+| (10,12) | 5 iterations | 6.75 ± 0.84 | 0.23 ± 0.10 | 99% |
 | (10,12) | 8 iterations | 6.70 ± 0.83 | 0.29 ± 0.08 | 99% |
-| (6,8) | 0 iterations | 473.93 ± 1.08 | 427.64 ± 0.62 | 3% |
-| (6,8) | 3 iterations | 10.07 ± 0.96 | 0.16 ± 0.03 | 100% |
-| (6,8) | 5 iterations | 6.78 ± 0.84 | 0.29 ± 0.20 | 99% |
+| (6,8) | 0 iterations | 574.16 ± 1.31 | 503.09 ± 0.86 | 4% |
+| (6,8) | 3 iterations | 10.05 ± 0.96 | 0.15 ± 0.03 | 100% |
+| (6,8) | 5 iterations | 6.80 ± 0.85 | 0.29 ± 0.21 | 99% |
 | (6,8) | 8 iterations | 6.65 ± 0.82 | 0.39 ± 0.18 | 99% |
 | Refined SVI target |  | 6.37 | 1.13 | 98% |

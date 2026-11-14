@@ -1,6 +1,6 @@
 # svb, Heston backbone
 
-Failure of Silicon Valley Bank; front-end rates collapse, VIX 26. The Heston backbone is fitted to the S&P 500 index options of 2023-02-13 (kappa = 1.7572, theta = 0.0615, sigma = 0.8130, rho = -0.7362, v0 = 0.0391); the leverage factor is calibrated to the 2,117 quotes of 2023-03-13, 1,174 of them liquid, at 14 expiries from 11 to 368 days.
+Failure of Silicon Valley Bank; front-end rates collapse, VIX 26. The Heston backbone is fitted to the S&P 500 index options of 2023-02-13 (kappa = 1.7573, theta = 0.0615, sigma = 0.8130, rho = -0.7362, v0 = 0.0391); the leverage factor is calibrated to the 2,117 quotes of 2023-03-13, 1,174 of them liquid, at 14 expiries from 11 to 368 days.
 
 Contents: [the paper's tables and figures](#the-papers-tables-and-figures), [all models](#all-models), [fixed-point iteration](#fixed-point-iteration), [correction steps](#correction-steps), [smiles at every expiry](#smiles-at-every-expiry), [prices at every expiry](#prices-at-every-expiry), [Monte Carlo uncertainty](#monte-carlo-uncertainty). The numbers are in [summary.json](summary.json) and the calibrated parameters in [parameters.json](parameters.json).
 
@@ -60,20 +60,20 @@ From here on every model is priced on 20 sets of 65,536 scrambled Sobol paths. R
 | (10,12) 3 iterations | 11.95 ± 2.70 | 7.62 ± 0.68 | 8.53 ± 2.02 | 26.71 ± 0.36 | 21.80 ± 0.22 | 13% | 4% | 82% |
 | (10,12) 5 iterations | 4.46 ± 1.31 | 2.40 ± 0.39 | 4.97 ± 0.69 | 26.67 ± 0.17 | 23.25 ± 0.41 | 15% | 3% | 83% |
 | (10,12) 8 iterations | 4.51 ± 1.30 | 2.00 ± 0.21 | 5.01 ± 0.84 | 26.69 ± 0.17 | 23.30 ± 0.40 | 15% | 3% | 83% |
-| (10,12) 12 iterations | 4.51 ± 1.30 | 2.00 ± 0.21 | 5.02 ± 0.85 | 26.68 ± 0.17 | 23.30 ± 0.40 | 15% | 3% | 83% |
+| (10,12) 12 iterations | 4.51 ± 1.31 | 2.00 ± 0.21 | 5.02 ± 0.85 | 26.68 ± 0.17 | 23.30 ± 0.40 | 15% | 3% | 83% |
 | (10,12) 0 iterations + 4 correction steps | 671.20 ± 1.77 | 244.29 ± 0.27 | 396.47 ± 3.22 | 409.88 ± 0.94 | 311.57 ± 0.44 | 2% | 0% | 98% |
 | (10,12) 3 iterations + 4 correction steps | 26.61 ± 1.87 | 23.62 ± 0.30 | 20.83 ± 0.81 | 15.69 ± 0.76 | 4.02 ± 0.26 | 51% | 13% | 36% |
 | (10,12) 5 iterations + 4 correction steps | 24.31 ± 1.60 | 22.74 ± 0.30 | 19.40 ± 0.25 | 14.66 ± 0.70 | 4.39 ± 0.25 | 47% | 13% | 40% |
 | (10,12) 8 iterations + 4 correction steps | 24.21 ± 1.60 | 22.67 ± 0.30 | 19.38 ± 0.26 | 14.70 ± 0.70 | 4.53 ± 0.25 | 47% | 13% | 41% |
 | (6,8) 3 iterations | 11.73 ± 2.50 | 8.05 ± 0.66 | 16.24 ± 1.65 | 28.81 ± 0.34 | 24.05 ± 0.21 | 13% | 4% | 83% |
-| (6,8) 5 iterations | 5.55 ± 1.18 | 2.97 ± 0.27 | 14.36 ± 0.47 | 28.93 ± 0.18 | 25.41 ± 0.37 | 15% | 3% | 82% |
+| (6,8) 5 iterations | 5.56 ± 1.18 | 2.97 ± 0.27 | 14.36 ± 0.47 | 28.93 ± 0.18 | 25.41 ± 0.37 | 15% | 3% | 82% |
 | (6,8) 8 iterations | 5.62 ± 1.20 | 2.68 ± 0.17 | 14.26 ± 0.43 | 28.93 ± 0.18 | 25.45 ± 0.36 | 14% | 4% | 82% |
 | (6,8) 12 iterations | 5.62 ± 1.20 | 2.68 ± 0.17 | 14.25 ± 0.43 | 28.93 ± 0.18 | 25.45 ± 0.36 | 14% | 4% | 82% |
-| (6,8) 0 iterations + 4 correction steps | 672.52 ± 1.80 | 244.69 ± 0.27 | 396.20 ± 3.17 | 410.79 ± 0.95 | 312.07 ± 0.44 | 2% | 0% | 98% |
+| (6,8) 0 iterations + 4 correction steps | 672.52 ± 1.80 | 244.69 ± 0.27 | 396.19 ± 3.17 | 410.79 ± 0.95 | 312.07 ± 0.44 | 2% | 0% | 98% |
 | (6,8) 3 iterations + 4 correction steps | 25.39 ± 1.69 | 23.63 ± 0.30 | 19.30 ± 1.27 | 15.78 ± 0.69 | 5.78 ± 0.18 | 49% | 11% | 40% |
 | (6,8) 5 iterations + 4 correction steps | 23.15 ± 1.43 | 22.43 ± 0.30 | 17.57 ± 0.34 | 14.73 ± 0.63 | 6.08 ± 0.17 | 45% | 12% | 43% |
 | (6,8) 8 iterations + 4 correction steps | 23.03 ± 1.43 | 22.37 ± 0.30 | 17.53 ± 0.28 | 14.77 ± 0.62 | 6.17 ± 0.17 | 45% | 11% | 43% |
-| particle method | 17.92 ± 1.88 | 9.54 ± 0.26 | 17.12 ± 0.67 | 27.91 ± 0.28 | 22.69 ± 0.50 | 18% | 3% | 79% |
+| particle method | 17.92 ± 1.89 | 9.54 ± 0.26 | 17.12 ± 0.67 | 27.91 ± 0.28 | 22.69 ± 0.50 | 18% | 3% | 79% |
 | refined SVI target |  |  |  | 26.64 | 23.68 | 16% |  |  |
 
 ## Fixed-point iteration
@@ -103,7 +103,7 @@ Bid-ask losses along the correction chains started after 0, 3, 5 and 8 iteration
 |---|---|---|---|---|
 | 0 iterations | 0 | 538.49 ± 1.03 | 379.35 ± 0.53 | 1% |
 | 0 iterations | 1 | 503.10 ± 0.97 | 364.61 ± 0.51 | 1% |
-| 0 iterations | 2 | 452.56 ± 0.94 | 340.43 ± 0.48 | 1% |
+| 0 iterations | 2 | 452.55 ± 0.94 | 340.43 ± 0.48 | 1% |
 | 0 iterations | 3 | 423.98 ± 0.93 | 322.66 ± 0.46 | 1% |
 | 0 iterations | 4 | 409.88 ± 0.94 | 311.57 ± 0.44 | 2% |
 | 3 iterations | 0 | 26.71 ± 0.36 | 21.80 ± 0.22 | 13% |
@@ -129,7 +129,7 @@ Bid-ask losses along the correction chains started after 0, 3, 5 and 8 iteration
 | 0 iterations | 0 | 538.49 ± 1.03 | 379.35 ± 0.53 | 1% |
 | 0 iterations | 1 | 502.88 ± 0.98 | 364.66 ± 0.51 | 1% |
 | 0 iterations | 2 | 452.58 ± 0.94 | 340.51 ± 0.48 | 1% |
-| 0 iterations | 3 | 424.26 ± 0.94 | 322.84 ± 0.46 | 1% |
+| 0 iterations | 3 | 424.25 ± 0.94 | 322.84 ± 0.46 | 1% |
 | 0 iterations | 4 | 410.79 ± 0.95 | 312.07 ± 0.44 | 2% |
 | 3 iterations | 0 | 28.81 ± 0.34 | 24.05 ± 0.21 | 13% |
 | 3 iterations | 1 | 24.69 ± 0.45 | 17.22 ± 0.20 | 17% |

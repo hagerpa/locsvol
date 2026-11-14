@@ -113,13 +113,13 @@ Each folder `<pair>/<backbone>/` holds the results of one run of `run.py`: the b
 | [`svb`](svb/bergomi) (2023-02-13 → 2023-03-13) | [Bergomi](svb/bergomi) | 4.1 / 2.6 / 8.0 | 6.7 / 3.0 / 11.0 | 21.2 / 9.6 / 16.2 | 42% | 45% | 16% |
 | [`svb`](svb/heston) (2023-02-13 → 2023-03-13) | [Heston](svb/heston) | 4.5 / 2.4 / 5.0 | 5.6 / 3.0 / 14.4 | 17.9 / 9.5 / 17.1 | 47% | 45% | 18% |
 | [`carry-unwind`](carry-unwind/bergomi) (2024-07-08 → 2024-08-05) | [Bergomi](carry-unwind/bergomi) | 6.4 / 4.1 / 5.5 | 6.8 / 3.6 / 4.7 | 31.1 / 23.4 / 12.2 | 98% | 98% | 67% |
-| [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 7.4 / 7.1 / 6.4 | 55.6 / 34.6 / 21.4 | 95% | 95% | 55% |
+| [`carry-unwind`](carry-unwind/heston) (2024-07-08 → 2024-08-05) | [Heston](carry-unwind/heston) | 5.0 / 6.8 / 9.3 | 7.4 / 7.1 / 6.4 | 55.6 / 34.6 / 21.4 | 96% | 95% | 55% |
 | [`election`](election/bergomi) (2024-10-09 → 2024-11-06) | [Bergomi](election/bergomi) | 7.7 / 5.7 / 7.1 | 16.3 / 6.0 / 8.0 | 25.9 / 13.4 / 19.8 | 68% | 58% | 30% |
-| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.0 / 8.1 / 13.2 | 21.8 / 11.2 / 17.8 | 38.2 / 20.0 / 19.8 | 73% | 64% | 30% |
+| [`election`](election/heston) (2024-10-09 → 2024-11-06) | [Heston](election/heston) | 9.0 / 8.1 / 13.2 | 21.8 / 11.2 / 17.8 | 38.0 / 20.0 / 19.7 | 73% | 64% | 29% |
 | [`fomc`](fomc/bergomi) (2024-11-20 → 2024-12-18) | [Bergomi](fomc/bergomi) | 5.1 / 5.2 / 4.3 | 17.9 / 5.7 / 6.5 | 44.7 / 26.0 / 26.8 | 93% | 87% | 50% |
 | [`fomc`](fomc/heston) (2024-11-20 → 2024-12-18) | [Heston](fomc/heston) | 6.5 / 5.5 / 5.7 | 15.1 / 7.5 / 6.8 | 71.3 / 40.0 / 21.4 | 91% | 84% | 40% |
 | [`tariffs`](tariffs/bergomi) (2025-02-19 → 2025-04-04) | [Bergomi](tariffs/bergomi) | 3.4 / 3.8 / 4.3 | 4.5 / 3.2 / 5.0 | 31.8 / 17.5 / 32.6 | 99% | 98% | 83% |
-| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.8 / 13.9 | 4.6 / 6.5 / 16.6 | 50.1 / 25.0 / 25.3 | 99% | 99% | 75% |
+| [`tariffs`](tariffs/heston) (2025-02-19 → 2025-04-04) | [Heston](tariffs/heston) | 4.0 / 6.7 / 13.9 | 4.6 / 6.5 / 16.6 | 50.1 / 25.0 / 25.3 | 99% | 99% | 75% |
 
 The RMSE columns give the root mean squared difference between model and target implied volatilities over the left wing, the central region and the right wing, in volatility basis points, for both bases after 5 iterations and for the particle method. The inside columns give the share of liquid quotes inside their bid-ask interval for both bases after four correction steps started after 5 iterations, and for the particle method.
 
@@ -149,6 +149,3 @@ run again. `results.py` writes the results of the run to `<pair>/<backbone>/`: t
 `README.md` with the paper's tables and figures for that pair and backbone and every other model
 of the run, `summary.json`, `parameters.json`, and the figures (`report.py`); it also rebuilds
 the [Results](#results) section above from every published run.
-
-The Heston backbones of the published runs were fitted with roughprix as of 18 September 2026,
-before its release 0.1.0; with 0.1.0 the fitted parameters agree to a relative 4e-5.

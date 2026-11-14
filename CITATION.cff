@@ -7,7 +7,7 @@ authors:
   - family-names: Hager
     given-names: Paul P.
     affiliation: University of Vienna
-version: 1.0.0
+version: 1.0.1
 license: Apache-2.0
 repository-code: "https://github.com/hagerpa/locsvol"
 keywords:

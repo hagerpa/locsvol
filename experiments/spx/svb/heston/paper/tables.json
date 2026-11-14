@@ -8,55 +8,55 @@
     {
       "label": "Joint regression (10,12), 5 iterations",
       "rmse_bp": {
-        "left": 8.261198539573634,
-        "central": 3.0302614636096106,
-        "right": 5.759005142681091
+        "left": 8.261580001434817,
+        "central": 3.030430112943135,
+        "right": 5.759014660147282
       },
       "two_standard_errors_bp": {
-        "left": 5.375328976708736,
-        "central": 1.1435461371460187,
-        "right": 0.3965694858445305
+        "left": 5.375185446968766,
+        "central": 1.1435516790510505,
+        "right": 0.396570432254576
       },
       "noise_floor_bp": {
-        "left": 6.022667646196117,
-        "central": 0.9353790369063285,
-        "right": 0.6798302884361789
+        "left": 6.022651276834725,
+        "central": 0.9353725485525609,
+        "right": 0.679829260990829
       }
     },
     {
       "label": "Joint regression (6,8), 5 iterations",
       "rmse_bp": {
-        "left": 9.635480653127996,
-        "central": 3.455701668217956,
-        "right": 14.97667528932141
+        "left": 9.635806457563785,
+        "central": 3.455858398588902,
+        "right": 14.97669503049918
       },
       "two_standard_errors_bp": {
-        "left": 5.801198813055345,
-        "central": 0.7142444893876913,
-        "right": 0.3954027375858847
+        "left": 5.801037427668447,
+        "central": 0.7142788448722264,
+        "right": 0.3954013192076182
       },
       "noise_floor_bp": {
-        "left": 6.0388505336497085,
-        "central": 0.9354690531915321,
-        "right": 0.678170544509426
+        "left": 6.038833275277506,
+        "central": 0.9354624103834241,
+        "right": 0.6781690084208521
       }
     },
     {
       "label": "Particle method",
       "rmse_bp": {
-        "left": 21.267680989691822,
-        "central": 10.173756218094677,
-        "right": 17.087837684977117
+        "left": 21.2664975269246,
+        "central": 10.173567704112786,
+        "right": 17.087419482086926
       },
       "two_standard_errors_bp": {
-        "left": 7.844548691344052,
-        "central": 1.1717062898384356,
-        "right": 0.38544258057290054
+        "left": 7.844513693817426,
+        "central": 1.1716467466725369,
+        "right": 0.3853786788796166
       },
       "noise_floor_bp": {
-        "left": 5.769773489724458,
-        "central": 0.9286772777804081,
-        "right": 0.6524979131342449
+        "left": 5.769787742051797,
+        "central": 0.9287022279566589,
+        "right": 0.6533069935060147
       }
     }
   ],
@@ -65,12 +65,12 @@
       "degrees": "(10,12)",
       "label": "0 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 411.2986835862413,
-        "liquid_quotes": 312.35266680237675
+        "all_quotes": 411.29880539117437,
+        "liquid_quotes": 312.3521242891624
       },
       "two_standard_errors_bp": {
-        "all_quotes": 2.124411376218156,
-        "liquid_quotes": 0.7025081584913524
+        "all_quotes": 2.12441188588265,
+        "liquid_quotes": 0.7025059406760137
       },
       "liquid_inside_percent": 1.5332197614991483
     },
@@ -78,25 +78,25 @@
       "degrees": "(10,12)",
       "label": "3 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 13.885316135274811,
-        "liquid_quotes": 4.021193107198278
+        "all_quotes": 13.8851877097827,
+        "liquid_quotes": 4.021280617954362
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.6248021270764834,
-        "liquid_quotes": 0.2672247994290139
+        "all_quotes": 1.624782294962963,
+        "liquid_quotes": 0.2672783752162244
       },
-      "liquid_inside_percent": 50.085178875638846
+      "liquid_inside_percent": 50.0
     },
     {
       "degrees": "(10,12)",
       "label": "5 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 13.019519580168238,
-        "liquid_quotes": 4.513844983334318
+        "all_quotes": 13.01980532160225,
+        "liquid_quotes": 4.513946923826174
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.5979829153462295,
-        "liquid_quotes": 0.3167872350377352
+        "all_quotes": 1.597981714689669,
+        "liquid_quotes": 0.3168095345300348
       },
       "liquid_inside_percent": 45.31516183986371
     },
@@ -104,12 +104,12 @@
       "degrees": "(10,12)",
       "label": "8 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 13.070946477214292,
-        "liquid_quotes": 4.655306391461394
+        "all_quotes": 13.070728616030895,
+        "liquid_quotes": 4.655432136267917
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.5932571198364225,
-        "liquid_quotes": 0.31386614420548253
+        "all_quotes": 1.5931475431356765,
+        "liquid_quotes": 0.3139357963115196
       },
       "liquid_inside_percent": 44.804088586030666
     },
@@ -117,12 +117,12 @@
       "degrees": "(6,8)",
       "label": "0 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 412.1452776147198,
-        "liquid_quotes": 312.84291172767297
+        "all_quotes": 412.1450458065046,
+        "liquid_quotes": 312.8424097099433
       },
       "two_standard_errors_bp": {
-        "all_quotes": 2.129206310323458,
-        "liquid_quotes": 0.7024401878114126
+        "all_quotes": 2.1292007253816934,
+        "liquid_quotes": 0.702436626928978
       },
       "liquid_inside_percent": 1.4480408858603067
     },
@@ -130,12 +130,12 @@
       "degrees": "(6,8)",
       "label": "3 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 14.338941453801567,
-        "liquid_quotes": 5.787226091962685
+        "all_quotes": 14.338954738126583,
+        "liquid_quotes": 5.787310846279453
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.6279250090697892,
-        "liquid_quotes": 0.16040354642772325
+        "all_quotes": 1.627963444659683,
+        "liquid_quotes": 0.1604338272240207
       },
       "liquid_inside_percent": 44.122657580919935
     },
@@ -143,12 +143,12 @@
       "degrees": "(6,8)",
       "label": "5 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 13.473939512627473,
-        "liquid_quotes": 6.2575654112968335
+        "all_quotes": 13.473829180248622,
+        "liquid_quotes": 6.257635718332372
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.5430247078213162,
-        "liquid_quotes": 0.2579510815426721
+        "all_quotes": 1.542945298870545,
+        "liquid_quotes": 0.2579759263219458
       },
       "liquid_inside_percent": 41.993185689948895
     },
@@ -156,12 +156,12 @@
       "degrees": "(6,8)",
       "label": "8 iterations",
       "bid_ask_loss_bp": {
-        "all_quotes": 13.512706818405563,
-        "liquid_quotes": 6.362973817900961
+        "all_quotes": 13.51252293966759,
+        "liquid_quotes": 6.363065307809639
       },
       "two_standard_errors_bp": {
-        "all_quotes": 1.5344392884756555,
-        "liquid_quotes": 0.2631388004262347
+        "all_quotes": 1.5343085538424386,
+        "liquid_quotes": 0.26317626388193144
       },
       "liquid_inside_percent": 41.993185689948895
     },

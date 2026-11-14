@@ -1,6 +1,6 @@
 # fomc, Heston backbone
 
-Interest rate decision of the Federal Open Market Committee; SPX about -3%, VIX from 15 to 28. The Heston backbone is fitted to the S&P 500 index options of 2024-11-20 (kappa = 4.4825, theta = 0.0391, sigma = 1.4470, rho = -0.6923, v0 = 0.0234); the leverage factor is calibrated to the 2,994 quotes of 2024-12-18, 1,503 of them liquid, at 16 expiries from 9 to 394 days.
+Interest rate decision of the Federal Open Market Committee; SPX about -3%, VIX from 15 to 28. The Heston backbone is fitted to the S&P 500 index options of 2024-11-20 (kappa = 4.4826, theta = 0.0391, sigma = 1.4470, rho = -0.6923, v0 = 0.0234); the leverage factor is calibrated to the 2,994 quotes of 2024-12-18, 1,503 of them liquid, at 16 expiries from 9 to 394 days.
 
 Contents: [the paper's tables and figures](#the-papers-tables-and-figures), [all models](#all-models), [fixed-point iteration](#fixed-point-iteration), [correction steps](#correction-steps), [smiles at every expiry](#smiles-at-every-expiry), [prices at every expiry](#prices-at-every-expiry), [Monte Carlo uncertainty](#monte-carlo-uncertainty). The numbers are in [summary.json](summary.json) and the calibrated parameters in [parameters.json](parameters.json).
 
@@ -16,7 +16,7 @@ Root mean squared error (RMSE) of the implied volatility against the refined SVI
 |---|---|---|---|
 | Joint regression (10,12), 5 iterations | 6.96 ± 4.60 | 6.26 ± 1.00 | 5.81 ± 0.24 |
 | Joint regression (6,8), 5 iterations | 13.09 ± 4.45 | 7.68 ± 0.68 | 6.92 ± 0.20 |
-| Particle method | 74.21 ± 4.57 | 40.91 ± 1.08 | 21.24 ± 0.22 |
+| Particle method | 74.20 ± 4.57 | 40.90 ± 1.08 | 21.23 ± 0.22 |
 
 Monte Carlo noise alone accounts for the following part of these RMSEs:
 
@@ -24,7 +24,7 @@ Monte Carlo noise alone accounts for the following part of these RMSEs:
 |---|---|---|---|
 | Joint regression (10,12), 5 iterations | 3.53 | 0.90 | 0.52 |
 | Joint regression (6,8), 5 iterations | 3.57 | 0.89 | 0.42 |
-| Particle method | 3.36 | 0.87 | 0.43 |
+| Particle method | 3.35 | 0.87 | 0.43 |
 
 ### Table 2
 
@@ -32,14 +32,14 @@ Bid-ask loss and share of liquid quotes inside their bid-ask interval after the 
 
 | Degrees | Correction started after | All quotes | Liquid quotes | Liquid inside |
 |---|---|---|---|---|
-| (10,12) | 0 iterations | 537.74 ± 1.74 | 296.75 ± 0.49 | 2% |
-| (10,12) | 3 iterations | 8.55 ± 0.79 | 4.52 ± 0.16 | 49% |
-| (10,12) | 5 iterations | 3.37 ± 0.70 | 0.44 ± 0.16 | 91% |
+| (10,12) | 0 iterations | 537.75 ± 1.74 | 296.75 ± 0.49 | 2% |
+| (10,12) | 3 iterations | 8.55 ± 0.78 | 4.52 ± 0.15 | 49% |
+| (10,12) | 5 iterations | 3.36 ± 0.70 | 0.44 ± 0.16 | 91% |
 | (10,12) | 8 iterations | 3.45 ± 0.54 | 0.73 ± 0.31 | 80% |
-| (6,8) | 0 iterations | 539.03 ± 1.74 | 297.34 ± 0.48 | 2% |
+| (6,8) | 0 iterations | 550.25 ± 1.74 | 303.55 ± 0.50 | 2% |
 | (6,8) | 3 iterations | 10.67 ± 1.22 | 4.71 ± 0.13 | 51% |
-| (6,8) | 5 iterations | 5.59 ± 1.11 | 0.79 ± 0.34 | 86% |
-| (6,8) | 8 iterations | 6.28 ± 1.14 | 1.25 ± 0.30 | 76% |
+| (6,8) | 5 iterations | 5.58 ± 1.11 | 0.79 ± 0.34 | 86% |
+| (6,8) | 8 iterations | 5.48 ± 0.81 | 1.43 ± 0.46 | 76% |
 | Refined SVI target |  | 7.37 | 6.40 | 42% |
 
 ![Smiles](paper/smiles.png)
@@ -56,24 +56,24 @@ From here on every model is priced on 20 sets of 65,536 scrambled Sobol paths. R
 
 | Model | Left wing | Central | Right wing | Bid-ask loss, all quotes | Bid-ask loss, liquid quotes | Liquid inside | Within noise | Further outside |
 |---|---|---|---|---|---|---|---|---|
-| starting point L0 | 1089.05 ± 5.64 | 405.73 ± 1.02 | 238.21 ± 1.12 | 710.84 ± 3.88 | 374.18 ± 1.09 | 2% | 0% | 98% |
-| (10,12) 3 iterations | 53.99 ± 6.00 | 33.57 ± 1.53 | 25.65 ± 1.92 | 29.83 ± 2.44 | 26.52 ± 1.28 | 32% | 3% | 65% |
-| (10,12) 5 iterations | 6.54 ± 3.54 | 5.48 ± 1.08 | 5.74 ± 0.54 | 7.78 ± 0.54 | 6.09 ± 0.28 | 49% | 9% | 42% |
-| (10,12) 8 iterations | 5.69 ± 4.26 | 4.71 ± 0.49 | 6.21 ± 0.79 | 8.39 ± 0.25 | 7.68 ± 0.30 | 48% | 5% | 47% |
-| (10,12) 12 iterations | 5.55 ± 4.09 | 4.68 ± 0.54 | 6.41 ± 0.89 | 8.34 ± 0.30 | 7.66 ± 0.32 | 48% | 5% | 47% |
-| (10,12) 0 iterations + 4 correction steps | 861.00 ± 5.08 | 304.19 ± 0.73 | 250.27 ± 1.14 | 535.77 ± 3.08 | 296.23 ± 0.77 | 2% | 0% | 98% |
-| (10,12) 3 iterations + 4 correction steps | 17.73 ± 5.01 | 13.80 ± 0.63 | 22.32 ± 1.86 | 9.77 ± 1.61 | 4.81 ± 0.42 | 50% | 11% | 39% |
-| (10,12) 5 iterations + 4 correction steps | 12.86 ± 3.27 | 13.27 ± 0.69 | 9.84 ± 0.32 | 4.42 ± 1.43 | 0.47 ± 0.26 | 91% | 8% | 1% |
-| (10,12) 8 iterations + 4 correction steps | 10.61 ± 2.85 | 12.95 ± 0.76 | 9.36 ± 0.60 | 4.31 ± 1.24 | 0.74 ± 0.33 | 82% | 14% | 4% |
-| (6,8) 3 iterations | 59.25 ± 6.37 | 33.61 ± 1.44 | 23.77 ± 1.27 | 31.26 ± 2.35 | 26.46 ± 1.17 | 28% | 3% | 69% |
-| (6,8) 5 iterations | 15.13 ± 5.89 | 7.51 ± 0.60 | 6.76 ± 0.53 | 9.76 ± 1.18 | 6.77 ± 0.25 | 44% | 8% | 48% |
-| (6,8) 8 iterations | 13.69 ± 5.23 | 6.83 ± 0.52 | 7.71 ± 0.79 | 10.09 ± 0.93 | 8.19 ± 0.31 | 42% | 5% | 53% |
-| (6,8) 12 iterations | 13.66 ± 5.36 | 6.80 ± 0.58 | 7.87 ± 0.83 | 10.06 ± 0.98 | 8.17 ± 0.33 | 42% | 6% | 52% |
-| (6,8) 0 iterations + 4 correction steps | 862.56 ± 5.03 | 304.89 ± 0.72 | 250.30 ± 1.15 | 537.07 ± 3.06 | 296.81 ± 0.77 | 2% | 0% | 98% |
-| (6,8) 3 iterations + 4 correction steps | 23.99 ± 6.27 | 12.15 ± 0.57 | 20.40 ± 1.27 | 11.99 ± 1.84 | 4.93 ± 0.32 | 52% | 9% | 39% |
-| (6,8) 5 iterations + 4 correction steps | 15.77 ± 5.60 | 12.52 ± 0.60 | 10.71 ± 0.67 | 6.78 ± 1.70 | 0.65 ± 0.07 | 84% | 11% | 5% |
-| (6,8) 8 iterations + 4 correction steps | 18.08 ± 5.46 | 11.83 ± 0.52 | 10.47 ± 0.79 | 7.44 ± 1.68 | 1.22 ± 0.18 | 76% | 13% | 12% |
-| particle method | 71.30 ± 4.89 | 40.00 ± 0.86 | 21.40 ± 0.65 | 35.90 ± 1.85 | 20.63 ± 0.72 | 40% | 5% | 55% |
+| starting point L0 | 1089.05 ± 5.63 | 405.73 ± 1.02 | 238.20 ± 1.12 | 710.84 ± 3.88 | 374.18 ± 1.09 | 2% | 0% | 98% |
+| (10,12) 3 iterations | 54.00 ± 6.00 | 33.57 ± 1.53 | 25.65 ± 1.93 | 29.84 ± 2.44 | 26.52 ± 1.28 | 32% | 3% | 65% |
+| (10,12) 5 iterations | 6.55 ± 3.54 | 5.48 ± 1.08 | 5.74 ± 0.54 | 7.78 ± 0.54 | 6.09 ± 0.27 | 49% | 9% | 42% |
+| (10,12) 8 iterations | 5.68 ± 4.26 | 4.71 ± 0.49 | 6.21 ± 0.79 | 8.39 ± 0.25 | 7.68 ± 0.30 | 48% | 5% | 47% |
+| (10,12) 12 iterations | 5.55 ± 4.09 | 4.68 ± 0.54 | 6.41 ± 0.89 | 8.34 ± 0.30 | 7.67 ± 0.32 | 48% | 5% | 47% |
+| (10,12) 0 iterations + 4 correction steps | 861.01 ± 5.08 | 304.19 ± 0.73 | 250.28 ± 1.14 | 535.77 ± 3.08 | 296.23 ± 0.77 | 2% | 0% | 98% |
+| (10,12) 3 iterations + 4 correction steps | 17.66 ± 5.01 | 13.80 ± 0.64 | 22.32 ± 1.86 | 9.76 ± 1.61 | 4.81 ± 0.41 | 50% | 10% | 39% |
+| (10,12) 5 iterations + 4 correction steps | 12.81 ± 3.33 | 13.25 ± 0.68 | 9.85 ± 0.32 | 4.42 ± 1.44 | 0.48 ± 0.26 | 91% | 8% | 1% |
+| (10,12) 8 iterations + 4 correction steps | 10.61 ± 2.86 | 12.94 ± 0.76 | 9.36 ± 0.60 | 4.32 ± 1.25 | 0.74 ± 0.33 | 82% | 14% | 4% |
+| (6,8) 3 iterations | 59.26 ± 6.37 | 33.61 ± 1.45 | 23.77 ± 1.27 | 31.26 ± 2.35 | 26.46 ± 1.17 | 28% | 3% | 69% |
+| (6,8) 5 iterations | 15.14 ± 5.89 | 7.51 ± 0.60 | 6.76 ± 0.53 | 9.76 ± 1.18 | 6.77 ± 0.25 | 44% | 8% | 48% |
+| (6,8) 8 iterations | 13.69 ± 5.23 | 6.83 ± 0.53 | 7.71 ± 0.79 | 10.09 ± 0.93 | 8.19 ± 0.31 | 42% | 5% | 53% |
+| (6,8) 12 iterations | 13.67 ± 5.36 | 6.80 ± 0.58 | 7.87 ± 0.83 | 10.06 ± 0.98 | 8.17 ± 0.33 | 42% | 6% | 52% |
+| (6,8) 0 iterations + 3 correction steps | 878.65 ± 5.03 | 310.68 ± 0.74 | 256.66 ± 1.08 | 548.34 ± 3.08 | 303.03 ± 0.79 | 2% | 0% | 97% |
+| (6,8) 3 iterations + 4 correction steps | 23.99 ± 6.27 | 12.14 ± 0.57 | 20.40 ± 1.27 | 11.99 ± 1.83 | 4.93 ± 0.32 | 52% | 9% | 39% |
+| (6,8) 5 iterations + 4 correction steps | 15.78 ± 5.61 | 12.51 ± 0.60 | 10.70 ± 0.67 | 6.79 ± 1.70 | 0.66 ± 0.07 | 84% | 11% | 5% |
+| (6,8) 8 iterations + 4 correction steps | 13.00 ± 5.50 | 11.88 ± 0.61 | 10.54 ± 0.79 | 6.49 ± 1.51 | 1.20 ± 0.18 | 76% | 13% | 11% |
+| particle method | 71.28 ± 4.89 | 39.99 ± 0.86 | 21.38 ± 0.63 | 35.89 ± 1.85 | 20.63 ± 0.72 | 40% | 5% | 55% |
 | refined SVI target |  |  |  | 7.37 | 6.40 | 42% |  |  |
 
 ## Fixed-point iteration
@@ -84,12 +84,12 @@ The root mean square change of the leverage factor along the simulated paths in 
 
 | Iterate | Left wing | Central | Right wing | Bid-ask loss, all quotes | Bid-ask loss, liquid quotes |
 |---|---|---|---|---|---|
-| (10,12) 3 iterations | 48.44 ± 8.77 | 28.89 ± 1.37 | 19.24 ± 2.74 | 21.49 ± 2.22 | 18.85 ± 1.13 |
-| (10,12) 5 iterations | 0.99 ± 3.79 | 0.81 ± 1.25 | -0.67 ± 1.11 | -0.56 ± 0.30 | -1.57 ± 0.40 |
+| (10,12) 3 iterations | 48.45 ± 8.76 | 28.89 ± 1.37 | 19.24 ± 2.74 | 21.50 ± 2.22 | 18.85 ± 1.13 |
+| (10,12) 5 iterations | 0.99 ± 3.79 | 0.80 ± 1.26 | -0.67 ± 1.11 | -0.56 ± 0.30 | -1.58 ± 0.40 |
 | (10,12) 8 iterations | 0.13 ± 0.48 | 0.03 ± 0.13 | -0.20 ± 0.11 | 0.05 ± 0.08 | 0.02 ± 0.04 |
-| (6,8) 3 iterations | 45.59 ± 3.91 | 26.81 ± 1.02 | 15.89 ± 2.07 | 21.20 ± 1.63 | 18.29 ± 1.00 |
-| (6,8) 5 iterations | 1.47 ± 1.10 | 0.71 ± 0.86 | -1.12 ± 0.43 | -0.29 ± 0.26 | -1.40 ± 0.34 |
-| (6,8) 8 iterations | 0.02 ± 0.22 | 0.03 ± 0.08 | -0.16 ± 0.05 | 0.04 ± 0.06 | 0.02 ± 0.04 |
+| (6,8) 3 iterations | 45.59 ± 3.90 | 26.81 ± 1.02 | 15.90 ± 2.07 | 21.20 ± 1.63 | 18.29 ± 0.99 |
+| (6,8) 5 iterations | 1.47 ± 1.10 | 0.70 ± 0.86 | -1.12 ± 0.43 | -0.29 ± 0.26 | -1.40 ± 0.34 |
+| (6,8) 8 iterations | 0.02 ± 0.22 | 0.03 ± 0.08 | -0.17 ± 0.05 | 0.03 ± 0.06 | 0.02 ± 0.04 |
 
 ## Correction steps
 
@@ -102,50 +102,49 @@ Bid-ask losses along the correction chains started after 0, 3, 5 and 8 iteration
 | Started after | Steps | Bid-ask loss, all quotes | Bid-ask loss, liquid quotes | Liquid inside |
 |---|---|---|---|---|
 | 0 iterations | 0 | 710.84 ± 3.88 | 374.18 ± 1.09 | 2% |
-| 0 iterations | 1 | 634.88 ± 3.57 | 343.79 ± 1.00 | 2% |
-| 0 iterations | 2 | 570.13 ± 3.17 | 313.77 ± 0.85 | 2% |
-| 0 iterations | 3 | 546.96 ± 3.10 | 302.22 ± 0.79 | 2% |
+| 0 iterations | 1 | 634.94 ± 3.56 | 343.81 ± 0.99 | 2% |
+| 0 iterations | 2 | 570.12 ± 3.17 | 313.77 ± 0.85 | 2% |
+| 0 iterations | 3 | 546.97 ± 3.10 | 302.22 ± 0.79 | 2% |
 | 0 iterations | 4 | 535.77 ± 3.08 | 296.23 ± 0.77 | 2% |
-| 3 iterations | 0 | 29.83 ± 2.44 | 26.52 ± 1.28 | 32% |
+| 3 iterations | 0 | 29.84 ± 2.44 | 26.52 ± 1.28 | 32% |
 | 3 iterations | 1 | 21.92 ± 2.23 | 18.78 ± 1.13 | 40% |
 | 3 iterations | 2 | 13.47 ± 1.76 | 10.54 ± 0.71 | 43% |
 | 3 iterations | 3 | 10.59 ± 1.48 | 6.88 ± 0.45 | 47% |
-| 3 iterations | 4 | 9.77 ± 1.61 | 4.81 ± 0.42 | 50% |
-| 5 iterations | 0 | 7.78 ± 0.54 | 6.09 ± 0.28 | 49% |
+| 3 iterations | 4 | 9.76 ± 1.61 | 4.81 ± 0.41 | 50% |
+| 5 iterations | 0 | 7.78 ± 0.54 | 6.09 ± 0.27 | 49% |
 | 5 iterations | 1 | 6.82 ± 0.93 | 3.57 ± 0.25 | 54% |
 | 5 iterations | 2 | 5.58 ± 1.30 | 1.63 ± 0.13 | 66% |
 | 5 iterations | 3 | 4.80 ± 1.44 | 0.75 ± 0.20 | 81% |
-| 5 iterations | 4 | 4.42 ± 1.43 | 0.47 ± 0.26 | 91% |
+| 5 iterations | 4 | 4.42 ± 1.44 | 0.48 ± 0.26 | 91% |
 | 8 iterations | 0 | 8.39 ± 0.25 | 7.68 ± 0.30 | 48% |
 | 8 iterations | 1 | 7.22 ± 0.43 | 5.15 ± 0.30 | 51% |
 | 8 iterations | 2 | 5.62 ± 0.86 | 2.81 ± 0.25 | 58% |
-| 8 iterations | 3 | 4.67 ± 1.15 | 1.40 ± 0.25 | 73% |
-| 8 iterations | 4 | 4.31 ± 1.24 | 0.74 ± 0.33 | 82% |
+| 8 iterations | 3 | 4.68 ± 1.15 | 1.40 ± 0.25 | 73% |
+| 8 iterations | 4 | 4.32 ± 1.25 | 0.74 ± 0.33 | 82% |
 
 ### Basis (6,8)
 
 | Started after | Steps | Bid-ask loss, all quotes | Bid-ask loss, liquid quotes | Liquid inside |
 |---|---|---|---|---|
 | 0 iterations | 0 | 710.84 ± 3.88 | 374.18 ± 1.09 | 2% |
-| 0 iterations | 1 | 635.92 ± 3.55 | 344.07 ± 1.00 | 2% |
+| 0 iterations | 1 | 635.93 ± 3.55 | 344.07 ± 1.00 | 2% |
 | 0 iterations | 2 | 571.80 ± 3.20 | 314.47 ± 0.86 | 2% |
 | 0 iterations | 3 | 548.34 ± 3.08 | 303.03 ± 0.79 | 2% |
-| 0 iterations | 4 | 537.07 ± 3.06 | 296.81 ± 0.77 | 2% |
 | 3 iterations | 0 | 31.26 ± 2.35 | 26.46 ± 1.17 | 28% |
 | 3 iterations | 1 | 22.71 ± 2.13 | 18.29 ± 1.01 | 39% |
 | 3 iterations | 2 | 15.19 ± 1.86 | 10.53 ± 0.62 | 42% |
 | 3 iterations | 3 | 12.61 ± 1.71 | 6.96 ± 0.38 | 47% |
-| 3 iterations | 4 | 11.99 ± 1.84 | 4.93 ± 0.32 | 52% |
+| 3 iterations | 4 | 11.99 ± 1.83 | 4.93 ± 0.32 | 52% |
 | 5 iterations | 0 | 9.76 ± 1.18 | 6.77 ± 0.25 | 44% |
 | 5 iterations | 1 | 8.74 ± 1.33 | 3.81 ± 0.29 | 53% |
 | 5 iterations | 2 | 7.39 ± 1.51 | 1.95 ± 0.19 | 64% |
-| 5 iterations | 3 | 7.77 ± 1.76 | 1.08 ± 0.14 | 77% |
-| 5 iterations | 4 | 6.78 ± 1.70 | 0.65 ± 0.07 | 84% |
+| 5 iterations | 3 | 7.78 ± 1.77 | 1.08 ± 0.14 | 77% |
+| 5 iterations | 4 | 6.79 ± 1.70 | 0.66 ± 0.07 | 84% |
 | 8 iterations | 0 | 10.09 ± 0.93 | 8.19 ± 0.31 | 42% |
-| 8 iterations | 1 | 8.97 ± 1.00 | 5.26 ± 0.29 | 49% |
-| 8 iterations | 2 | 7.43 ± 1.20 | 3.16 ± 0.27 | 59% |
-| 8 iterations | 3 | 6.73 ± 1.39 | 1.86 ± 0.23 | 68% |
-| 8 iterations | 4 | 7.44 ± 1.68 | 1.22 ± 0.18 | 76% |
+| 8 iterations | 1 | 8.98 ± 1.00 | 5.26 ± 0.29 | 49% |
+| 8 iterations | 2 | 7.43 ± 1.20 | 3.16 ± 0.27 | 58% |
+| 8 iterations | 3 | 6.74 ± 1.40 | 1.86 ± 0.22 | 68% |
+| 8 iterations | 4 | 6.49 ± 1.51 | 1.20 ± 0.18 | 76% |
 
 ## Smiles at every expiry
 
@@ -171,6 +170,10 @@ Twice the standard error of the pooled implied volatility at the points of the c
 | (10,12) 12 iterations | left wing | 7.5 | 12.9 | 20.6 |
 | (10,12) 12 iterations | central | 2.0 | 3.2 | 4.4 |
 | (10,12) 12 iterations | right wing | 2.2 | 5.0 | 8.6 |
-| particle method | left wing | 7.0 | 11.9 | 19.5 |
+| particle method | left wing | 7.0 | 11.8 | 19.5 |
 | particle method | central | 1.9 | 3.0 | 3.8 |
-| particle method | right wing | 2.2 | 4.6 | 7.3 |
+| particle method | right wing | 2.2 | 4.4 | 7.4 |
+
+## Notes
+
+- The chain of (6,8) after 0 iterations ends after 3 of 4 steps: the next step's optimization did not converge.
